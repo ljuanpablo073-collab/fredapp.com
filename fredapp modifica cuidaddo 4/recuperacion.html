@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fredapp - Recuperar Contraseña</title>
+    <!-- Enlaces de fuentes y Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ========================================================================= */
+        /* 🎨 1. VARIABLES Y RESET */
+        /* ========================================================================= */
+        :root {
+            --color-primary: #1f2a74; /* Azul oscuro */
+            --color-secondary: #f7a723; /* Naranja */
+            --color-background-light: #f5f5f5; /* Gris muy claro para el fondo */
+            --color-text-dark: #333;
+            --color-text-light: #fff;
+            --border-radius: 12px;
+            --nav-height: 65px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex; 
+            flex-direction: column;
+        }
+
+        a { text-decoration: none; transition: color 0.3s; }
+        button { cursor: pointer; border: none; font-family: inherit; transition: 0.3s; }
+
+        /* ========================================================================= */
+        /* ⚓ 2. HEADER (Navegación Fija) */
+        /* ========================================================================= */
+        .header {
+            width: 100%; height: var(--nav-height);
+            background-color: var(--color-primary); 
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000; 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px;
+        }
+        .header .logo { 
+            color: var(--color-text-light); 
+            font-size: 1.6rem; 
+            font-weight: 700; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header .logo img {
+            height: 30px; 
+            width: auto;
+        }
+
+        .close-btn { 
+            color: white; 
+            font-size: 1.8rem; 
+            cursor: pointer; 
+            padding: 5px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        .close-btn:hover { 
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        /* ========================================================================= */
+        /* 3. FONDO Y CAJA DE LOGIN */
+        /* ========================================================================= */
+        .login-wrapper {
+            flex-grow: 1; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden; 
+        }
+        
+        /* Contenedor del patrón de fondo (PNG transparente) */
+        .pattern-background {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            /* Propiedad 'image-rendering:imagenes' eliminada por ser inválida. */
+            background-image: url('i'); 
+            background-repeat: repeat; 
+            background-size: 200px; 
+            opacity: 0.2; 
+            z-index: 1;
+        }
+
+        /* La caja de formulario de inicio de sesión */
+        .login-box {
+            background-color: rgba(255, 255, 255, 0.9); 
+            padding: 35px 40px;
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); 
+            width: 100%;
+            max-width: 400px; 
+            text-align: center;
+            z-index: 2; 
+            transition: all 0.3s ease-in-out;
+        }
+
+        .login-box h2 {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .login-box p.description {
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+            color: #555;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .login-box input[type="email"],
+        .login-box input[type="text"], 
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .login-box input:focus {
+            border-color: var(--color-secondary);
+            box-shadow: 0 0 5px rgba(247, 167, 35, 0.5);
+        }
+        
+        /* Botón de acción principal */
+        .main-action-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            font-size: 1.1rem;
+            margin-top: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: block; 
+            text-align: center;
+        }
+        .main-action-btn:hover { 
+            background-color: #fcae2d; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .links-container { 
+            margin-top: 25px;
+            font-size: 0.95rem;
+        }
+        .link-text {
+            color: var(--color-primary);
+            display: block;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        .link-text:hover {
+            color: var(--color-secondary);
+            text-decoration: underline;
+        }
+        
+        /* ========================================================================= */
+        /* 4. RESPONSIVIDAD (MÓVIL - Máx 480px) */
+        /* ========================================================================= */
+        @media (max-width: 480px) {
+            .header { height: 55px; }
+            .header .logo { font-size: 1.4rem; }
+            .header .logo img { height: 25px; }
+            .close-btn { font-size: 1.5rem; }
+            .login-box { padding: 30px 25px; margin: 0 15px; }
+            .login-box h2 { font-size: 1.3rem; margin-bottom: 20px; }
+            .login-box input { padding: 10px 12px; }
+            .main-action-btn { font-size: 1rem; padding: 10px; }
+            .links-container { font-size: 0.9rem; }
+        }
+        
+        /* ========================================================================= */
+        /* 5. ESTILOS DEL MODAL PERSONALIZADO (ALERTA) */
+        /* ========================================================================= */
+        #customAlert {
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); 
+            display: none; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 5000;
+        }
+        #customAlert > div {
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+            max-width: 400px; 
+            text-align: center;
+        }
+        #alertMessage {
+            color: var(--color-primary); 
+            font-weight: 600; 
+            font-size: 1.1rem; 
+            margin-bottom: 20px;
+        }
+        #customAlert button {
+            background-color: var(--color-secondary); 
+            color: var(--color-primary); 
+            padding: 8px 20px; 
+            border-radius: 6px; 
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================================================= -->
+    <!-- ⚓ HEADER DE NAVEGACIÓN -->
+    <!-- ========================================================================= -->
+    <header class="header">
+        <a href="home.html" class="logo">
+            <!-- Placeholder de logo -->
+            <img src="imagenes/logo/SVG/SVG/logos.svg" onerror="this.onerror=null; this.src='https://placehold.co/30x30/1f2a74/ffffff?text=F';" alt="Logo Fredapp">
+        </a>
+        
+        <!-- Botón para cerrar o volver a la página anterior -->
+        <a href="inisio2.html" class="close-btn" onclick="s('Simular: Cerrar y volver a la página anterior')">
+            <i class="fas fa-times"></i>
+        </a>
+    </header>
+
+    <!-- ========================================================================= -->
+    <!-- 3. CONTENIDO PRINCIPAL (RECUPERAR CONTRASEÑA) -->
+    <!-- ========================================================================= -->
+    <div class="login-wrapper">
+        
+        <div class="pattern-background"></div>
+
+        <div class="login-box">
+            <h2>RECUPERAR CONTRASEÑA</h2>
+            <p class="description">Ingresa tu correo electrónico para recibir un enlace de recuperación.</p>
+            
+            <form id="recoveryForm">
+                <div class="input-group">
+                    <input type="email" id="email" placeholder="Correo" required>
+                </div>
+                
+                <button type="submit" class="main-action-btn">ENVIAR ENLACE</button>
+            </form>
+            
+            <div class="links-container" style="justify-content: center;"> 
+                <a href="inisio2.html" class="link-text">
+                    Volver a iniciar sesión
+                </a>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- ========================================================================= -->
+    <!-- 5. MODAL PERSONALIZADO (Para reemplazar alert() y confirm()) -->
+    <!-- ========================================================================= -->
+    <div id="customAlert">
+        <div>
+            <p id="alertMessage"></p>
+            <button onclick="document.getElementById('customAlert').style.display='none';">Aceptar</button>
+        </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- 6. LÓGICA JAVASCRIPT -->
+    <!-- ========================================================================= -->
+    <script>
+        // Función global para mostrar un modal personalizado en lugar de alert()
+        window.showCustomAlert = function(message) {
+            document.getElementById('alertMessage').textContent = message;
+            document.getElementById('customAlert').style.display = 'flex';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const recoveryForm = document.getElementById('recoveryForm');
+            
+            recoveryForm.addEventListener('submit', function(e) {
+                e.preventDefault(); 
+                const email = document.getElementById('email').value;
+
+                if (email) {
+                    showCustomAlert(`Se ha enviado un enlace de recuperación a: ${email}. Redirigiendo a inicio de sesión...`);
+                    setTimeout(() => {
+                        window.location.href = 'inisio2.html';
+                    }, 2500);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

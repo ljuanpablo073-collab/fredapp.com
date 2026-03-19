@@ -1,0 +1,444 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fredapp - Oferta de Empleo y Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ========================================================================= */
+        /* 🎨 1. VARIABLES & RESET */
+        /* ========================================================================= */
+        :root {
+            --color-primary: #1f2a74; /* Azul oscuro */
+            --color-secondary: #f7a723; /* Naranja/Amarillo */
+            --color-background-light: #f5f5f5; /* Fondo general */
+            --color-text-dark: #333;
+            --color-text-light: #fff;
+            --color-card-border: #eee;
+            --font-main: 'Poppins', sans-serif;
+            --border-radius: 12px;
+            --nav-height: 65px;
+            --mobile-breakpoint: 768px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.6;
+            overflow-x: hidden; /* Evita scroll horizontal no deseado */
+        }
+
+        a { text-decoration: none; }
+
+        /* ========================================================================= */
+        /* ⚓ 2. NAVEGACIÓN FIJA (Header) */
+        /* ========================================================================= */
+        .header {
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+            background-color: var(--color-primary); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px;
+        }
+        .header .logo { 
+            color: var(--color-text-light); 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            display: flex;
+            align-items: center;
+        }
+        .header .logo img {
+            height: 40px; 
+            width: auto;
+        }
+        
+        /* Estilos base del menú (Escritorio) */
+        .nav-menu { 
+            display: flex; 
+            align-items: center;
+            gap: 10px; 
+            transition: transform 0.3s ease-in-out;
+        }
+        .nav-menu .nav-link { 
+            background-color: var(--color-secondary); 
+            color: var(--color-primary);
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: background-color 0.3s, transform 0.2s;
+            white-space: nowrap;
+        }
+        .nav-menu .nav-link:hover { 
+            background-color: #fcae2d; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ----------------------------------------------------------- */
+        /* 🍔 ESTILOS DEL MENÚ HAMBURGUESA (Móvil) */
+        /* ----------------------------------------------------------- */
+        .menu-toggle {
+            display: none; /* Oculto en escritorio */
+            background: none;
+            border: none;
+            color: var(--color-text-light);
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 1100; /* Por encima del menú desplegable */
+            padding: 5px 10px;
+        }
+        .menu-toggle span {
+            display: block;
+            width: 30px;
+            height: 3px;
+            background: var(--color-text-light);
+            margin: 6px 0;
+            transition: 0.4s;
+            border-radius: 5px;
+        }
+        /* Animación de la X */
+        .menu-toggle.is-open span:nth-child(1) { transform: rotate(-45deg) translate(-6px, 6px); }
+        .menu-toggle.is-open span:nth-child(2) { opacity: 0; }
+        .menu-toggle.is-open span:nth-child(3) { transform: rotate(45deg) translate(-6px, -6px); }
+        
+        /* Media Query para Móviles */
+        @media (max-width: 768px) { 
+            .menu-toggle { display: block; order: 3; }
+            
+            .nav-menu {
+                position: fixed; /* Fixed para que cubra la pantalla si es necesario */
+                top: var(--nav-height); 
+                right: 0;
+                height: calc(100vh - var(--nav-height)); /* Altura completa menos header */
+                flex-direction: column; 
+                justify-content: flex-start;
+                background-color: var(--color-primary); 
+                width: 250px; /* Ancho del menú lateral */
+                padding: 20px;
+                box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+                
+                /* Lógica de ocultamiento */
+                transform: translateX(100%); 
+                visibility: hidden;
+                transition: transform 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            }
+            
+            /* Clase activa para mostrar el menú */
+            .nav-menu.is-open { 
+                transform: translateX(0); 
+                visibility: visible; 
+            }
+            
+            .nav-menu .nav-link { 
+                width: 100%; 
+                margin-bottom: 15px; 
+                padding: 12px; 
+                text-align: center;
+            }
+            
+            /* Ajuste para el contenedor de usuario en móvil */
+            .user-actions {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                margin-left: 0;
+            }
+        }
+
+        /* ========================================================================= */
+        /* 👤 3. MENÚ DE PERFIL DESPLEGABLE */
+        /* ========================================================================= */
+        .user-actions { position: relative; display: inline-block; margin-left: 10px; }
+        .profile-icon {
+            height: 45px; width: 45px; border-radius: 50%;
+            background-color: #fff; border: 2px solid var(--color-secondary);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; transition: transform 0.2s;
+        }
+        .profile-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-icon:hover { transform: scale(1.05); }
+
+        .auth-menu {
+            position: absolute; top: calc(100% + 10px); right: 0;             
+            background-color: white; border: 1px solid #ccc; border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); min-width: 180px; 
+            padding: 5px 0; z-index: 1010; 
+            opacity: 0; visibility: hidden; transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+        }
+        .auth-menu.is-open { opacity: 1; visibility: visible; transform: translateY(0); }
+        .auth-menu a {
+            display: block; padding: 10px 15px; text-decoration: none;
+            color: var(--color-text-dark); font-weight: 500; transition: background-color 0.2s;
+        }
+        .auth-menu a:hover { background-color: var(--color-background-light); }
+
+        /* ========================================================================= */
+        /* 🖼️ 4. LAYOUT DE 3 COLUMNAS Y CONTENIDO */
+        /* ========================================================================= */
+        .content-wrapper { 
+            padding-top: var(--nav-height); 
+            padding-bottom: 40px;
+            min-height: 100vh;
+        }
+        
+        .main-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr 350px; 
+            gap: 30px;
+            max-width: 1300px;
+            margin: 40px auto;
+            padding: 0 30px;
+        }
+        
+        /* Columna 1 */
+        .sidebar-left { display: flex; flex-direction: column; gap: 20px; }
+        .job-link-btn {
+            background-color: #fff; border: 1px solid var(--color-card-border);
+            border-radius: var(--border-radius); padding: 15px;
+            display: flex; align-items: flex-start; gap: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); transition: all 0.3s ease;
+            cursor: pointer; color: var(--color-text-dark); text-align: left;
+        }
+        .job-link-btn:hover { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
+        .job-link-btn .logo-mini { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; overflow: hidden; border: 1px solid #ddd; }
+        .job-link-btn .logo-mini img { width: 100%; height: 100%; object-fit: cover; }
+        .job-link-btn .text-info { font-size: 0.8rem; line-height: 1.3; }
+        .job-link-btn .text-info strong { display: block; font-size: 0.9rem; color: var(--color-primary); }
+
+        /* Columna 2 */
+        .main-info {
+            background-color: #fff; border-radius: var(--border-radius);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); padding: 30px;
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        .company-header {
+            display: flex; align-items: center; gap: 15px; padding-bottom: 10px;
+            border-bottom: 1px solid var(--color-card-border);
+        }
+        .company-header .logo-large {
+            width: 60px; height: 60px; border-radius: 50%;
+            border: 1px solid var(--color-secondary); flex-shrink: 0; overflow: hidden;
+        }
+        .company-header .logo-large img { width: 100%; height: 100%; object-fit: contain; }
+        .company-header h2 { font-size: 1.6rem; color: var(--color-primary); }
+        .job-description { max-height: 400px; overflow-y: auto; padding-right: 10px; }
+        .job-description p { margin-bottom: 15px; }
+        .apply-btn {
+            background-color: var(--color-secondary); color: var(--color-primary);
+            padding: 15px 30px; border-radius: 10px; font-weight: 700;
+            text-align: center; display: inline-block; transition: background-color 0.2s, transform 0.2s;
+            cursor: pointer; border: none; width: fit-content;
+        }
+        .apply-btn:hover { background-color: #eb991f; transform: translateY(-1px); }
+
+        /* Columna 3: Chat */
+        .sidebar-right {
+            background-color: #fff; border-radius: var(--border-radius);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); display: flex;
+            flex-direction: column; overflow: hidden; height: 500px; /* Altura fija para el chat */
+        }
+        .chat-header {
+            background-color: var(--color-primary); color: var(--color-text-light);
+            padding: 15px; font-weight: 600; display: flex; align-items: center; gap: 10px;
+        }
+        .chat-messages {
+            flex-grow: 1; padding: 15px; overflow-y: auto;
+            background-color: var(--color-background-light); display: flex;
+            flex-direction: column; gap: 10px;
+        }
+        .message { max-width: 80%; padding: 10px; border-radius: 15px; line-height: 1.4; }
+        .message.company { background-color: var(--color-secondary); color: var(--color-primary); align-self: flex-start; }
+        .message.user { background-color: var(--color-primary); color: var(--color-text-light); align-self: flex-end; }
+        .chat-input { border-top: 1px solid #ddd; padding: 10px; display: flex; align-items: center; gap: 10px; }
+        .chat-input input { flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+        .chat-input button { background: none; border: none; color: var(--color-primary); font-size: 1.5rem; cursor: pointer; transition: color 0.2s; }
+        .chat-input button:hover { color: var(--color-secondary); }
+
+        /* ========================================================================= */
+        /* 📱 5. RESPONSIVIDAD AVANZADA */
+        /* ========================================================================= */
+        
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr 350px; 
+                grid-template-areas: "main sidebar-right" "sidebar-left sidebar-left";
+            }
+            .sidebar-left { grid-area: sidebar-left; flex-direction: row; flex-wrap: wrap; gap: 20px; }
+            .main-info { grid-area: main; }
+            .sidebar-right { grid-area: sidebar-right; }
+            .job-link-btn { flex-grow: 1; max-width: 48%; min-width: 250px; }
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr; 
+                grid-template-areas: "main" "sidebar-right" "sidebar-left";
+                margin: 20px 0; padding: 0 15px; gap: 20px;
+            }
+            .company-header { flex-direction: column; align-items: flex-start; text-align: left; gap: 5px; }
+            .company-header h2 { font-size: 1.4rem; line-height: 1.2; }
+            .sidebar-left { flex-direction: column; }
+            .job-link-btn { max-width: 100%; min-width: auto; }
+            .sidebar-right { height: 400px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="home.html" class="logo">
+        <img src="imagenes/logo/SVG/SVG/logos.svg" alt="Fredapp Logo">
+    </a>
+    
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    
+    <nav class="nav-menu" id="navMenu">
+        <a href="index22.html" class="nav-link">Trabajos</a>
+        <a href="perfilaprendis.html" class="nav-link">Perfil</a>
+        <a href="filtro.html" class="nav-link">Portafolios</a>
+        
+        <div class="user-actions"> 
+            <button class="profile-icon" id="profileBtn">
+                <img src="imagenes/SVG/icono.png" alt="Perfil">
+            </button>
+            <div class="auth-menu" id="authMenu">
+                <a href="/iniciar-sesion.html">Iniciar Sesión</a>
+                <a href="/registrar.html">Registrarse</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="content-wrapper">
+    <div class="main-layout">
+        
+        <aside class="sidebar-left">
+            <h3 style="color: var(--color-primary); margin-bottom: 5px;">Otras Ofertas</h3>
+            <a href="#" class="job-link-btn">
+                <div class="logo-mini"><img src="imagenes/SVG/mantra.svg" alt="Logo"></div>
+                <div class="text-info"><strong>Mantra</strong> Buscando productor multimedia...</div>
+            </a>
+            <a href="#" class="job-link-btn">
+                <div class="logo-mini"><img src="imagenes/SVG/colanta.svg" alt="Logo"></div>
+                <div class="text-info"><strong>Colanta</strong> Estrategas marketing...</div>
+            </a>
+            <a href="#" class="job-link-btn">
+                <div class="logo-mini"><img src="imagenes/SVG/seonet.svg" alt="Logo"></div>
+                <div class="text-info"><strong>Seonet</strong> Especialistas diseño...</div>
+            </a>
+        </aside>
+        
+        <main class="main-info">
+            <div class="company-header">
+                <div class="logo-large"><img src="imagenes/SVG/gulupa.svg" alt="Noel Logo"></div>
+                <h2>Gulupastudio</h2>
+            </div>
+            <div class="job-description">
+                <p><strong>Puesto: productor multimedia.</strong></p>
+                <p>Buscamos talento para nuestras vacantes corporativas en marketing y diseño...</p>
+                <p><strong>Responsabilidades:</strong> Mantenimiento de diseño web, creacion e reels, manejor de proyectos pequeños .</p>
+                <p><strong>Requisitos:</strong> Manejo medio adobe illustrator, phothoshop, basico visual code y resida en Medellín.</p>
+                <p><strong>Solicitud:</strong> <a href="#">Anabel.glupa@gmail.com/a>. Plazo hasta 30 de dic.</p>
+            </div>
+            <button class="apply-btn" id="notifyBtn">Solicitar / Enviar Notificación</button>
+        </main>
+        
+        <aside class="sidebar-right">
+            <div class="chat-header">💬 Chat con Gulupa</div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message company">¡Hola! Vemos tu interés. ¿Preguntas?</div>
+                <div class="message user">¡Claro! ¿Qué software de gestión usan?</div>
+                <div class="message company">Usamos Jira. Sube tu portafolio.</div>
+            </div>
+            <div class="chat-input">
+                <input type="text" placeholder="Escribe..." id="chatInput">
+                <button id="sendBtn">➤</button>
+            </div>
+        </aside>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // --- LÓGICA MENÚ HAMBURGUESA ---
+        const menuToggle = document.getElementById('menuToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('is-open');
+            menuToggle.classList.toggle('is-open');
+        });
+
+        // --- LÓGICA MENÚ PERFIL ---
+        const profileBtn = document.getElementById('profileBtn');
+        const authMenu = document.getElementById('authMenu');
+        
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evita cierre inmediato
+            authMenu.classList.toggle('is-open');
+        });
+
+        // Cierra menús al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                navMenu.classList.remove('is-open');
+                menuToggle.classList.remove('is-open');
+            }
+            if (!profileBtn.contains(e.target) && !authMenu.contains(e.target)) {
+                authMenu.classList.remove('is-open');
+            }
+        });
+
+        // --- LÓGICA CHAT ---
+        const chatInput = document.getElementById('chatInput');
+        const chatMessages = document.getElementById('chatMessages');
+        const sendBtn = document.getElementById('sendBtn');
+
+        const sendMessage = () => {
+            const text = chatInput.value.trim();
+            if (text) {
+                const msg = document.createElement('div');
+                msg.className = 'message user';
+                msg.textContent = text;
+                chatMessages.appendChild(msg);
+                chatInput.value = '';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                setTimeout(() => {
+                    const resp = document.createElement('div');
+                    resp.className = 'message company';
+                    resp.textContent = "Mensaje recibido.";
+                    chatMessages.appendChild(resp);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000);
+            }
+        };
+
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // --- BOTÓN SOLICITUD ---
+        document.getElementById('notifyBtn').addEventListener('click', () => {
+            alert("Solicitud enviada a Noel S.A.S");
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fredapp — Inicio | Los Mejores Portafolios</title>
+    <meta name="description"
+        content="Descubre los 10 mejores portafolios creativos y encuentra oportunidades de empleo en diseño, marketing e ilustración en Fredapp.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ========================================================================= */
+        /* 🎨 1. VARIABLES & RESET */
+        /* ========================================================================= */
+        :root {
+            --color-primary: #1f2a74;
+            --color-primary-dark: #161d54;
+            --color-secondary: #f7a723;
+            --color-secondary-hover: #e69c1e;
+            --color-background-light: #f5f5f5;
+            --color-text-dark: #333;
+            --color-text-light: #fff;
+            --color-card-border: #eee;
+            --font-main: 'Poppins', sans-serif;
+            --border-radius: 12px;
+            --nav-height: 65px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ========================================================================= */
+        /* ⚓ 2. HEADER / NAVEGACIÓN FIJA */
+        /* ========================================================================= */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background-color: var(--color-primary);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+        }
+
+        .header .logo {
+            color: var(--color-text-light);
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .header .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.3s ease-in-out;
+            flex-direction: row-reverse;
+        }
+
+        .nav-menu .nav-link {
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-menu .nav-link:hover {
+            background-color: #fcae2d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hamburguesa */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--color-text-light);
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 1100;
+            padding: 5px 10px;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 30px;
+            height: 3px;
+            background: var(--color-text-light);
+            margin: 6px 0;
+            transition: 0.4s;
+            border-radius: 5px;
+        }
+
+        .menu-toggle.is-open span:nth-child(1) {
+            transform: rotate(-45deg) translate(-6px, 6px);
+        }
+
+        .menu-toggle.is-open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.is-open span:nth-child(3) {
+            transform: rotate(45deg) translate(-6px, -6px);
+        }
+
+        /* Perfil dropdown */
+        .user-actions {
+            position: relative;
+            margin-left: 10px;
+        }
+
+        .profile-icon {
+            height: 45px;
+            width: 45px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 2px solid var(--color-secondary);
+            cursor: pointer;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .auth-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            padding: 5px 0;
+            z-index: 1010;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+        }
+
+        .auth-menu.is-open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .auth-menu a {
+            display: block;
+            padding: 10px 15px;
+            color: var(--color-text-dark);
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .auth-menu a:hover {
+            background-color: var(--color-background-light);
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+                order: 3;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: var(--nav-height);
+                right: 0;
+                height: calc(100vh - var(--nav-height));
+                flex-direction: column;
+                justify-content: flex-start;
+                background-color: var(--color-primary);
+                width: 250px;
+                padding: 20px;
+                box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+                transform: translateX(100%);
+                visibility: hidden;
+                transition: transform 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            }
+
+            .nav-menu.is-open {
+                transform: translateX(0);
+                visibility: visible;
+            }
+
+            .nav-menu .nav-link {
+                width: 100%;
+                margin-bottom: 15px;
+                padding: 12px;
+                text-align: center;
+            }
+
+            .user-actions {
+                margin: 0;
+                display: flex;
+                justify-content: right;
+                width: 100%;
+            }
+        }
+
+        /* ========================================================================= */
+        /* 🎠 3. CARRUSEL HERO */
+        /* ========================================================================= */
+        .content-wrapper {
+            padding-top: var(--nav-height);
+        }
+
+        .carousel-section {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            overflow: hidden;
+            background: var(--color-primary-dark);
+        }
+
+        .carousel-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.55);
+        }
+
+        .carousel-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 40px 60px;
+            background: linear-gradient(transparent, rgba(31, 42, 116, 0.92));
+            color: white;
+        }
+
+        .carousel-caption span {
+            display: inline-block;
+            background: var(--color-secondary);
+            color: var(--color-primary);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .carousel-caption h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 6px;
+        }
+
+        .carousel-caption p {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            max-width: 500px;
+        }
+
+        /* Flechas */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .carousel-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-btn.prev {
+            left: 20px;
+        }
+
+        .carousel-btn.next {
+            right: 20px;
+        }
+
+        /* Dots */
+        .carousel-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .carousel-dot.active {
+            background: var(--color-secondary);
+            width: 28px;
+            border-radius: 5px;
+        }
+
+        /* ========================================================================= */
+        /* 📐 4. SECCIÓN TÍTULO */
+        /* ========================================================================= */
+        .section-header {
+            text-align: center;
+            padding: 40px 20px 10px;
+        }
+
+        .section-header h1 {
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            font-weight: 800;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--color-secondary);
+            border-radius: 2px;
+        }
+
+        .section-header p {
+            margin-top: 18px;
+            color: #777;
+            font-size: 0.95rem;
+        }
+
+        /* ========================================================================= */
+        /* 🖼️ 5. LAYOUT 3 COLUMNAS — portafolios + empleos */
+        /* ========================================================================= */
+        .home-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr 260px;
+            gap: 30px;
+            max-width: 1320px;
+            margin: 30px auto 50px;
+            padding: 0 25px;
+        }
+
+        /* --- Sidebar (empleos) --- */
+        .jobs-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .jobs-sidebar h3 {
+            color: var(--color-primary);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .jobs-sidebar h3::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: var(--color-secondary);
+            border-radius: 2px;
+        }
+
+        .job-card-mini {
+            background: #fff;
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--border-radius);
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .job-card-mini:hover {
+            box-shadow: 0 6px 20px rgba(31, 42, 116, 0.12);
+            transform: translateY(-3px);
+            border-color: var(--color-secondary);
+        }
+
+        .job-card-mini .jc-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            overflow: hidden;
+            border: 2px solid #eee;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .job-card-mini .jc-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .job-card-mini .jc-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .job-card-mini .jc-info strong {
+            display: block;
+            font-size: 0.82rem;
+            color: var(--color-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .job-card-mini .jc-info span {
+            font-size: 0.72rem;
+            color: #888;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .job-card-mini .jc-arrow {
+            font-size: 0.9rem;
+            color: #ccc;
+            transition: color 0.3s;
+        }
+
+        .job-card-mini:hover .jc-arrow {
+            color: var(--color-secondary);
+        }
+
+        /* --- Grid central portafolios --- */
+        .portfolio-center {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .port-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+        }
+
+        .port-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(31, 42, 116, 0.18);
+        }
+
+        .port-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .port-card:hover img {
+            transform: scale(1.08);
+        }
+
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(31, 42, 116, 0.88), rgba(45, 62, 168, 0.85));
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            gap: 6px;
+        }
+
+        .port-card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .card-overlay .port-name {
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        .card-overlay .port-tag {
+            font-size: 0.7rem;
+            background: var(--color-secondary);
+            color: var(--color-primary);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+
+        /* Portafolio destacado (card grande, primer item) */
+        .port-card.featured {
+            grid-column: 1 / -1;
+            aspect-ratio: 21/9;
+        }
+
+        /* Botón ver todos */
+        .see-all-btn {
+            display: block;
+            width: fit-content;
+            margin: 10px auto 0;
+            background: var(--color-primary);
+            color: white;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: var(--font-main);
+        }
+
+        .see-all-btn:hover {
+            background: var(--color-secondary);
+            color: var(--color-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(247, 167, 35, 0.35);
+        }
+
+        /* ========================================================================= */
+        /* 📱 6. RESPONSIVE */
+        /* ========================================================================= */
+        @media (max-width: 1100px) {
+            .home-layout {
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas:
+                    "center center"
+                    "left right";
+            }
+
+            .portfolio-center {
+                grid-area: center;
+            }
+
+            .jobs-sidebar:first-child {
+                grid-area: left;
+            }
+
+            .jobs-sidebar:last-child {
+                grid-area: right;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .carousel-section {
+                height: 280px;
+            }
+
+            .carousel-caption {
+                padding: 25px;
+            }
+
+            .carousel-caption h2 {
+                font-size: 1.3rem;
+            }
+
+            .carousel-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 1rem;
+            }
+
+            .home-layout {
+                grid-template-columns: 1fr;
+                grid-template-areas: "center" "left" "right";
+                padding: 0 15px;
+                gap: 25px;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .section-header h1 {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .carousel-section {
+                height: 220px;
+            }
+
+            .carousel-caption h2 {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* ========================================================================= */
+        /* 🦶 7. FOOTER */
+        /* ========================================================================= */
+        .site-footer {
+            background: var(--color-primary);
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            padding: 25px 20px;
+            font-size: 0.82rem;
+        }
+
+        .site-footer strong {
+            color: var(--color-secondary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- HEADER -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <header class="header">
+        <a href="home.html" class="logo">
+            <img src="imagenes/logo/SVG/SVG/logos.svg" alt="Fredapp Logo">
+        </a>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav class="nav-menu" id="navMenu">
+            <div class="user-actions">
+                <button class="profile-icon" id="profileBtn">
+                    <img src="imagenes/SVG/icono.png" alt="Perfil">
+                </button>
+                <div class="auth-menu" id="authMenu">
+                    <a href="inisio2.html">Iniciar Sesión</a>
+                    <a href="registro2.html">Registrarse</a>
+                </div>
+            </div>
+            <a href="index22.html" class="nav-link">Trabajos</a>
+            <a href="perfilsub.html" class="nav-link">Perfil</a>
+            <a href="filtro.html" class="nav-link">Portafolios</a>
+        </nav>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- CARRUSEL HERO -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="content-wrapper">
+
+        <section class="carousel-section" id="heroCarousel">
+            <div class="carousel-track" id="carouselTrack">
+                <div class="carousel-slide">
+                    <img src="" alt="Branding">
+                    <div class="carousel-caption">
+                        <span>⭐ Portafolio Destacado</span>
+                        <h2>Branding — Identidad Visual</h2>
+                        <p>Construcción de marca y sistemas de identidad visual corporativa de alto impacto.</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="imagenes/trabajos ejemplo/editoriak.png" alt="Diseño Editorial">
+                    <div class="carousel-caption">
+                        <span>⭐ Portafolio Destacado</span>
+                        <h2>Diseño Editorial Profesional</h2>
+                        <p>Maquetación, diagramación y diseño de publicaciones con estándares premium.</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="imagenes/trabajos ejemplo/chica.webp" alt="Motion Graphics">
+                    <div class="carousel-caption">
+                        <span>⭐ Portafolio Destacado</span>
+                        <h2>Comercial Motion Graphics</h2>
+                        <p>Animación publicitaria y motion design para campañas digitales de alto rendimiento.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="carousel-btn prev" id="carouselPrev">‹</button>
+            <button class="carousel-btn next" id="carouselNext">›</button>
+
+            <div class="carousel-dots" id="carouselDots">
+                <button class="carousel-dot active" data-index="0"></button>
+                <button class="carousel-dot" data-index="1"></button>
+                <button class="carousel-dot" data-index="2"></button>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- TÍTULO SECCIÓN -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <section class="section-header">
+            <h1>Los 10 Mejores Portafolios</h1>
+            <p>Descubre el talento creativo más destacado de la comunidad Fredapp</p>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- LAYOUT 3 COLUMNAS -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <section class="home-layout">
+
+            <!-- COLUMNA IZQUIERDA — Empleos -->
+            <aside class="jobs-sidebar">
+                <h3>Postulaciones</h3>
+
+                <a href="noelresposiva.html" class="job-card-mini">
+                    <div class="jc-logo"><img src="imagenes/SVG/noel.svg" alt="Noel"></div>
+                    <div class="jc-info">
+                        <strong>Noel S.A.S</strong>
+                        <span>Diseñador Creativo Junior — Medellín</span>
+                    </div>
+                    <span class="jc-arrow">›</span>
+                </a>
+
+                <a href="alpina.html" class="job-card-mini">
+                    <div class="jc-logo"><img src="imagenes/SVG/alpina.svg" alt="Alpina"></div>
+                    <div class="jc-info">
+                        <strong>Alpina S.A.S</strong>
+                        <span>Profesionales para Marketing y Diseño</span>
+                    </div>
+                    <span class="jc-arrow">›</span>
+                </a>
+
+                <a href="colanta.html" class="job-card-mini">
+                    <div class="jc-logo"><img src="imagenes/SVG/colanta.svg" alt="Colanta"></div>
+                    <div class="jc-info">
+                        <strong>Colanta</strong>
+                        <span>Área de diseño — Personal nuevo</span>
+                    </div>
+                    <span class="jc-arrow">›</span>
+                </a>
+
+                <a href="smart.html" class="job-card-mini">
+                    <div class="jc-logo"><img src="imagenes/SVG/smart.svg" alt="SmartBrands"></div>
+                    <div class="jc-info">
+                        <strong>SmartBrands Corp</strong>
+                        <span>Personal especializado en diseño</span>
+                    </div>
+                    <span class="jc-arrow">›</span>
+                </a>
+            </aside>
+
+            <!-- COLUMNA CENTRAL — Portafolios Grid -->
+            <div class="portfolio-center">
+                <div class="portfolio-grid">
+
+                    <!-- 1 – Branding (Destacado grande) -->
+                    <a href="filtro.html" class="port-card featured">
+                        <img src="imagenes/trabajos ejemplo/titan.png" alt="Branding">
+                        <div class="card-overlay">
+                            <span class="port-tag">★ #1 Más valorado</span>
+                            <span class="port-name">Branding — Identidad Visual</span>
+                        </div>
+                    </a>
+
+                    <!-- 2 – Editorial -->
+                    <a href="filtro.html" class="port-card">
+                        <img src="imagenes/Sin título-1.jpg" alt="Diseño Editorial">
+                        <div class="card-overlay">
+                            <span class="port-tag">#2</span>
+                            <span class="port-name">Diseño Editorial</span>
+                        </div>
+                    </a>
+
+                    <!-- 3 – Motion -->
+                    <a href="filtro.html" class="port-card">
+                        <img src="" alt="Motion Graphics">
+                        <div class="card-overlay">
+                            <span class="port-tag">#3</span>
+                            <span class="port-name">Comercial Motion</span>
+                        </div>
+                    </a>
+
+                    <!-- 4 – Packaging -->
+                    <a href="filtro.html" class="port-card">
+                        <img src="imagenes/trabajos ejemplo/Captura de pantalla 2025-12-04 152014.png" alt="Packaging">
+                        <div class="card-overlay">
+                            <span class="port-tag">#4</span>
+                            <span class="port-name">Packaging Koppico</span>
+                        </div>
+                    </a>
+
+                    <!-- 5 – Web -->
+                    <a href="filtro.html" class="port-card">
+                        <img src="imagenes/trabajos ejemplo/web.png" alt="Diseño Web">
+                        <div class="card-overlay">
+                            <span class="port-tag">#5</span>
+                            <span class="port-name">Diseño Web</span>
+                        </div>
+                    </a>
+
+                    <!-- 6 – OVA -->
+                    <a href="filtro.html" class="port-card">
+                        <img src="imagenes/trabajos ejemplo/ova.png" alt="OVA Institucional">
+                        <div class="card-overlay">
+                            <span class="port-tag">#6</span>
+                            <span class="port-name">OVA Institucional</span>
+                        </div>
+                    </a>
+
+                    <!-- 7 – Posters -->
+                    <a href="filtro.html" class="port-card">
+                        <img src="imagenes/trabajos ejemplo/stan212.png" alt="Creación de Posters">
+                        <div class="card-overlay">
+                            <span class="port-tag">#7</span>
+                            <span class="port-name">Creación de Posters</span>
+                        </div>
+                    </a>
+
+                    <!-- 8 – 3D -->
+                    <a href="filtro.html" class="port-card">
+                        <img src="imagenes/trabajos ejemplo/3d.png" alt="Modelado 3D">
+                        <div class="card-overlay">
+                            <span class="port-tag">#8</span>
+                            <span class="port-name">Modelado 3D Infantil</span>
+                        </div>
+                    </a>
+
+                    <!-- 9 – Ilustración -->
+                    <a href="filtro.html" class="port-card">
+                        <img src="imagenes/trabajos ejemplo/ilustracion.png" alt="Ilustración">
+                        <div class="card-overlay">
+                            <span class="port-tag">#9</span>
+                            <span class="port-name">Ilustración</span>
+                        </div>
+                    </a>
+
+                    <!-- 10 – Flyer -->
+                    <a href="filtro.html" class="port-card">
+                        <img src="imagenes/trabajos ejemplo/Captura de pantalla 2025-12-04 152014.png"
+                            alt="Diseño de Flyer">
+                        <div class="card-overlay">
+                            <span class="port-tag">#10</span>
+                            <span class="port-name">Diseño de Flyer</span>
+                        </div>
+                    </a>
+
+                </div>
+
+                <a href="filtro.html" class="see-all-btn">Ver todos los portafolios →</a>
+            </div>
+
+            <!-- COLUMNA DERECHA — Más Empleos -->
+            <aside class="jobs-sidebar">
+                <h3>Más Ofertas</h3>
+
+                <a href="gulupastudio.html" class="job-card-mini">
+                    <div class="jc-logo"><img src="imagenes/SVG/gulupa.svg" alt="Gulupa"></div>
+                    <div class="jc-info">
+                        <strong>Gulupa Studio</strong>
+                        <span>Productor Multimedia — Medellín</span>
+                    </div>
+                    <span class="jc-arrow">›</span>
+                </a>
+
+                <a href="seonet.html" class="job-card-mini">
+                    <div class="jc-logo"><img src="imagenes/SVG/seonet.svg" alt="Seonet"></div>
+                    <div class="jc-info">
+                        <strong>Seonet Digital</strong>
+                        <span>Especialistas diseño e informática</span>
+                    </div>
+                    <span class="jc-arrow">›</span>
+                </a>
+
+                <a href="sosadiaz.html" class="job-card-mini">
+                    <div class="jc-logo"><img src="imagenes/SVG/sd.svg" alt="Sosadiaz"></div>
+                    <div class="jc-info">
+                        <strong>Sosadiaz</strong>
+                        <span>Varios puestos de trabajo disponibles</span>
+                    </div>
+                    <span class="jc-arrow">›</span>
+                </a>
+
+                <a href="mantra.html" class="job-card-mini">
+                    <div class="jc-logo"><img src="imagenes/SVG/mantra.svg" alt="Mantra"></div>
+                    <div class="jc-info">
+                        <strong>Mantra</strong>
+                        <span>Diseñador de packaging creativo</span>
+                    </div>
+                    <span class="jc-arrow">›</span>
+                </a>
+            </aside>
+
+        </section>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- FOOTER -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <footer class="site-footer">
+        © 2026 <strong>Fredapp</strong> — Conectando talento creativo con oportunidades reales.
+    </footer>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- JAVASCRIPT -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // ── MENÚ HAMBURGUESA ──
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('is-open');
+                menuToggle.classList.toggle('is-open');
+            });
+
+            // ── MENÚ PERFIL ──
+            const profileBtn = document.getElementById('profileBtn');
+            const authMenu = document.getElementById('authMenu');
+            profileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                authMenu.classList.toggle('is-open');
+            });
+
+            // Cerrar menús al clic fuera
+            document.addEventListener('click', (e) => {
+                if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                    navMenu.classList.remove('is-open');
+                    menuToggle.classList.remove('is-open');
+                }
+                if (!profileBtn.contains(e.target) && !authMenu.contains(e.target)) {
+                    authMenu.classList.remove('is-open');
+                }
+            });
+
+            // ══════════════════════════════════════════════════
+            // CARRUSEL AUTOMÁTICO
+            // ══════════════════════════════════════════════════
+            const track = document.getElementById('carouselTrack');
+            const slides = track.querySelectorAll('.carousel-slide');
+            const dots = document.querySelectorAll('.carousel-dot');
+            const prevBtn = document.getElementById('carouselPrev');
+            const nextBtn = document.getElementById('carouselNext');
+            let current = 0;
+            let autoplayTimer;
+
+            function goToSlide(index) {
+                if (index < 0) index = slides.length - 1;
+                if (index >= slides.length) index = 0;
+                current = index;
+                track.style.transform = `translateX(-${current * 100}%)`;
+                dots.forEach((d, i) => d.classList.toggle('active', i === current));
+            }
+
+            function startAutoplay() {
+                autoplayTimer = setInterval(() => goToSlide(current + 1), 4500);
+            }
+            function resetAutoplay() {
+                clearInterval(autoplayTimer);
+                startAutoplay();
+            }
+
+            prevBtn.addEventListener('click', () => { goToSlide(current - 1); resetAutoplay(); });
+            nextBtn.addEventListener('click', () => { goToSlide(current + 1); resetAutoplay(); });
+            dots.forEach(dot => {
+                dot.addEventListener('click', () => {
+                    goToSlide(parseInt(dot.dataset.index));
+                    resetAutoplay();
+                });
+            });
+
+            // Touch/swipe support
+            let touchStartX = 0;
+            const carousel = document.getElementById('heroCarousel');
+            carousel.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+            carousel.addEventListener('touchend', (e) => {
+                const diff = touchStartX - e.changedTouches[0].clientX;
+                if (Math.abs(diff) > 50) {
+                    diff > 0 ? goToSlide(current + 1) : goToSlide(current - 1);
+                    resetAutoplay();
+                }
+            }, { passive: true });
+
+            startAutoplay();
+        });
+    </script>
+
+</body>
+
+</html>

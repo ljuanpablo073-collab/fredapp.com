@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fredapp - Bolsa de Empleos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- PASO 1: Cargar la librería de iconos Lucide -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        /* ========================================================================= */
+        /* 🎨 1. VARIABLES & RESET */
+        /* ========================================================================= */
+        :root {
+            --color-primary: #1f2a74;
+            --color-secondary: #f7a723;
+            --color-background-light: #f5f5f5;
+            --color-text-dark: #333;
+            --color-text-light: #fff;
+            --color-card-border: #eee;
+            --font-main: 'Poppins', sans-serif;
+            --border-radius: 12px;
+            --nav-height: 65px;
+            --mobile-breakpoint: 768px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            /* Evita scroll horizontal en móvil */
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* ========================================================================= */
+        /* ⚓ 2. NAVEGACIÓN FIJA (Header) */
+        /* ========================================================================= */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background-color: var(--color-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .header .logo {
+            color: var(--color-text-light);
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .header .logo img {
+            /* Placeholder para la imagen del logo, ajustado a las rutas comunes */
+            height: 40px;
+            width: auto;
+        }
+
+        /* Estilos del Menú (Escritorio) */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.3s ease-in-out;
+            flex-direction: row-reverse;
+        }
+
+        .nav-menu .nav-link {
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-menu .nav-link:hover {
+            background-color: #fcae2d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ----------------------------------------------------------- */
+        /* 🍔 3. ESTILOS DEL MENÚ HAMBURGUESA (Móvil) */
+        /* ----------------------------------------------------------- */
+        .menu-toggle {
+            display: none;
+            /* Oculto en escritorio */
+            background: none;
+            border: none;
+            color: var(--color-text-light);
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 1100;
+            padding: 5px 10px;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 30px;
+            height: 3px;
+            background: var(--color-text-light);
+            margin: 6px 0;
+            transition: 0.4s;
+            border-radius: 5px;
+        }
+
+        /* Animación de la X */
+        .menu-toggle.is-open span:nth-child(1) {
+            transform: rotate(-45deg) translate(-6px, 6px);
+        }
+
+        .menu-toggle.is-open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.is-open span:nth-child(3) {
+            transform: rotate(45deg) translate(-6px, -6px);
+        }
+
+        /* Media Query para Móviles (Menos de 768px) */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+                order: 3;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: var(--nav-height);
+                right: 0;
+                height: calc(100vh - var(--nav-height));
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+
+                background-color: var(--color-primary);
+                width: 250px;
+                padding: 20px;
+                box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+
+                /* Oculto por defecto */
+                transform: translateX(100%);
+                visibility: hidden;
+                transition: transform 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            }
+
+            /* Estado Visible */
+            .nav-menu.is-open {
+                transform: translateX(0);
+                visibility: visible;
+            }
+
+            .nav-menu .nav-link {
+                width: 100%;
+                margin-bottom: 15px;
+                padding: 12px;
+                text-align: center;
+            }
+
+            .user-actions {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                margin-bottom: 20px;
+                order: 1;
+            }
+
+            .auth-menu {
+                right: auto;
+                left: 50%;
+                transform: translate(-50%, -10px);
+            }
+
+            .auth-menu.is-open {
+                transform: translate(-50%, 0);
+            }
+
+            .nav-menu a[href="filtro.html"] {
+                order: 2;
+            }
+
+            .nav-menu a[href="perfilsub.html"] {
+                order: 3;
+            }
+
+            .nav-menu a[href="celudos.html"] {
+                order: 4;
+            }
+        }
+
+        /* ========================================================================= */
+        /* 👤 4. MENÚ DE PERFIL DESPLEGABLE (Mi Cuenta) */
+        /* ========================================================================= */
+        .user-actions {
+            position: relative;
+            margin-right: 15px;
+            margin-left: 10px;
+        }
+
+        .profile-icon {
+            height: 45px;
+            width: 45px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 2px solid var(--color-secondary);
+            cursor: pointer;
+
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .profile-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .auth-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            padding: 5px 0;
+            z-index: 1010;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+        }
+
+        .auth-menu.is-open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .auth-menu a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: var(--color-text-dark);
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .auth-menu a:hover {
+            background-color: var(--color-background-light);
+        }
+
+        /* ========================================================================= */
+        /* 🌐 5. CONTENIDO PRINCIPAL - Actualizado para el Select */
+        /* ========================================================================= */
+        .content-wrapper {
+            padding-top: var(--nav-height);
+            padding-bottom: 40px;
+        }
+
+        .hero-section {
+            padding: 30px 40px 20px;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            gap: 20px;
+            background-color: var(--color-background-light);
+        }
+
+        /* Contenedor del Filtro y Búsqueda */
+        .filter-search-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 40px;
+            align-items: center;
+            /* Alineación vertical */
+        }
+
+        /* Estilos del Select de Categoría */
+        #categorySelect {
+            padding: 15px 20px;
+            border: 2px solid #ccc;
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+            flex-shrink: 0;
+            /* Evita que se encoja */
+            min-width: 150px;
+            appearance: none;
+            /* Oculta el estilo nativo */
+            background-color: white;
+            /* El SVG se sigue usando para el ícono de la flecha del select */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z' clip-rule='evenodd' /%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 1.2em;
+            cursor: pointer;
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        /* Barra de Búsqueda */
+        .search-bar {
+            width: 100%;
+            position: relative;
+            flex-grow: 1;
+            /* Permite que tome el espacio restante */
+        }
+
+        .search-bar input {
+            width: 100%;
+            /* Aumentamos el padding derecho para el nuevo icono SVG */
+            padding: 15px 50px 15px 20px;
+            border: 2px solid #ccc;
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        /* Icono de Lupa dentro del input (anteriormente emoji) */
+        /* PASO 2B: ELIMINAMOS EL PSEUDO-ELEMENTO DEL EMOJI */
+        .search-bar::after {
+            content: none;
+        }
+
+        /* Ocultamos el viejo pseudo-elemento del contenedor que ahora ya no existe */
+        .search-bar::before {
+            content: none;
+        }
+
+        /* PASO 2B: NUEVO ESTILO PARA EL ICONO SVG DE LUCIDE */
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            width: 20px;
+            /* Tamaño del icono */
+            height: 20px;
+            /* Tamaño del icono */
+            pointer-events: none;
+            /* No interfiere con el input */
+        }
+
+        /* ========================================================================= */
+        /* 📦 6. GRID DE TARJETAS DE EMPLEO */
+        /* ========================================================================= */
+        .main-content {
+            padding: 40px;
+        }
+
+        .job-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .job-card {
+            background-color: #fff;
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .job-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .job-card .card-link {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .company-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .company-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .job-info h3 {
+            margin-top: 0;
+            font-size: 1rem;
+            color: var(--color-primary);
+            margin-bottom: 5px;
+        }
+
+        .job-info p {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0;
+        }
+
+        /* ========================================================================= */
+        /* 📱 7. RESPONSIVIDAD GRID Y FILTROS */
+        /* ========================================================================= */
+
+        /* Tabletas / Portátiles pequeños (Menos de 1200px) */
+        @media (max-width: 1199px) {
+            .job-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
+        /* Pantallas medianas (Menos de 900px) */
+        @media (max-width: 900px) {
+            .header {
+                padding: 0 15px;
+            }
+
+            .job-grid {
+                grid-template-columns: 1fr;
+                max-width: 600px;
+            }
+
+            .main-content {
+                padding: 20px 15px;
+            }
+
+            /* Ajuste de filtros en pantalla mediana */
+            .filter-search-container {
+                padding: 0 15px;
+            }
+        }
+
+        /* Móviles (Menos de 600px - Cambiamos el select y el input a modo columna) */
+        @media (max-width: 600px) {
+            .filter-search-container {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 0 15px;
+            }
+
+            #categorySelect {
+                width: 100%;
+                min-width: unset;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <a href="home.html" class="logo">
+            <!-- Se mantiene el uso de la imagen/logo.png -->
+            <img src="imagenes/logo/SVG/SVG/logos.svg" alt="Fredapp Logo">
+        </a>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú de navegación">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <nav class="nav-menu" id="navMenu" role="navigation" aria-label="Navegación principal">
+            <div class="user-actions">
+                <button class="profile-icon" id="profileBtn" aria-expanded="false" aria-controls="authMenu">
+                    <!-- Se mantiene el uso de la imagen/perfil-usuario.jpg -->
+                    <img src="imagenes/SVG/icono.png" alt="Perfil de Usuario">
+                </button>
+
+                <div class="auth-menu" id="authMenu" aria-hidden="true">
+                    <a href="sesion.html">Iniciar Sesión</a>
+                    <a href="registro2.html">Registrarse</a>
+                </div>
+            </div>
+
+            <a href="celudos.html" class="nav-link" aria-label="Ir a Trabajos">Trabajos</a>
+            <a href="perfilsub.html" class="nav-link" aria-label="Ir a Perfil">Perfil</a>
+            <a href="filtro.html" class="nav-link" aria-label="Ir a Portafolios">Portafolios</a>
+
+
+        </nav>
+    </header>
+
+    <div class="content-wrapper">
+
+        <section class="hero-section">
+            <!-- Se elimina .category-bar -->
+
+            <!-- Nuevo Contenedor para el Select y la Búsqueda -->
+            <div class="filter-search-container">
+
+                <!-- Nuevo Select de Categorías -->
+                <select id="categorySelect" aria-label="Seleccionar categoría de empleo">
+                    <option value="Todos">Todos</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Diseño web">Diseño web</option>
+                    <option value="Ilustrador">Ilustrador</option>
+                    <option barefoot value="Edición">Edición</option>
+                </select>
+
+                <!-- Barra de Búsqueda -->
+                <!-- PASO 2A: Reemplazamos el id del input y agregamos el icono Lucide -->
+                <div class="search-bar">
+                    <input type="search" placeholder="Buscar trabajos, empresas o palabras clave..." id="searchInput">
+                    <i data-lucide="search" class="search-icon" aria-hidden="true"></i>
+                </div>
+            </div>
+
+        </section>
+
+        <main class="main-content">
+            <div class="job-grid" id="jobGrid">
+                <!-- NOTA: Las rutas de las imágenes de logos están como ejemplo -->
+                <div class="job-card" data-category="Marketing">
+                    <a href="mantra.html" class="card-link">
+                        <div class="company-logo"><img src="imagenes/SVG/mantra.svg" alt="Mantra Logo"></div>
+                        <div class="job-info">
+                            <h3>Mantra</h3>
+                            <p>Estamos buscando alguien que tenga buen ojo para la creacion de packaging de creativo y
+                                responsable...</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="job-card" data-category="Diseño web">
+                    <a href="noelresposiva.html" class="card-link">
+                        <div class="company-logo"><img src="imagenes/SVG/noel2.png" alt="Noel Logo"></div>
+                        <div class="job-info">
+                            <h3>Compañía de Galletas Noel S.A.S</h3>
+                            <p>Diseñador especialistas en packaging para todo tipo de producto, principalmente ubicados
+                                en Medellín</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="job-card" data-category="Marketing">
+                    <a href="gulupastudio.html" class="card-link">
+                        <div class="company-logo"><img src="imagenes/SVG/gulupa.svg" alt="Gulupa Logo"></div>
+                        <div class="job-info">
+                            <h3>Gulupa digital</h3>
+                            <p>Buscamos estrategias de marketing para la creacion de campañas creativas y con un buen
+                                atencion al detalle</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="job-card" data-category="Marketing">
+                    <a href="gulupastudio.html" class="card-link">
+                        <div class="company-logo"><img src="imagenes/SVG/gulupa.svg" alt="Gulupa Logo"></div>
+                        <div class="job-info">
+                            <h3>Gulupa digital</h3>
+                            <p>Buscamos estrategias de marketing para la creacion de campañas creativas y con un buen
+                                atencion al detalle</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="job-card" data-category="Ilustrador">
+                    <a href="smart.html" class="card-link">
+                        <div class="company-logo"><img src="imagenes/SVG/smart.svg" alt="SmartBrands Logo"></div>
+                        <div class="job-info">
+                            <h3>SmartBrands Corp SAS</h3>
+                            <p>Buscamos personal especializados en motion graphics, diseño de marca</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="job-card" data-category="Diseño web">
+                    <a href="colanta.html" class="card-link">
+                        <div class="company-logo"><img src="imagenes/SVG/colanta.svg" alt="Colanta Logo"></div>
+                        <div class="job-info">
+                            <h3>Cooperativa Lechera de Antioquia</h3>
+                            <p>Buscamos nuevo personal para nuestra area de diseño</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="job-card" data-category="Edición">
+                    <a href="seonet.html">
+                        <div class="card-link">
+                            <div class="company-logo"><img src="imagenes/SVG/seonet.svg" alt="Seonet Logo"></div>
+                            <div class="job-info">
+                                <h3>Seonet Digital</h3>
+                                <p>Buscamos especialistas de diseño e informatica</p>
+                            </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="job-card" data-category="Marketing">
+                <a href="alpina.html">
+                    <div class="card-link">
+                        <div class="company-logo"><img src="imagenes/SVG/alpina.svg" alt="Alpina Logo"></div>
+                        <div class="job-info">
+                            <h3>Alpina Productos Alimenticios S.A.S</h3>
+                            <p>Buscamos nuevos profesionales para puestos de trabajo</p>
+                        </div>
+                </a>
+            </div>
+    </div>
+
+    <div class="job-card" data-category="Diseño web">
+        <a href="sosadiaz.html">
+            <div class="card-link">
+                <div class="company-logo"><img src="imagenes/SVG/sd.svg" alt="SDI Logo"></div>
+                <div class="job-info">
+                    <h3>Sosadiaz</h3>
+                    <p>Buscamos personal para varios puestos de trabajo</p>
+                </div>
+        </a>
+    </div>
+    </div>
+
+    <div class="job-card" data-category="Edición">
+        <div class="card-link">
+            <div class="company-logo"><img src="imagenes/SVG/seonet.svg" alt="Seonet Logo"></div>
+            <div class="job-info">
+                <h3>Seonet Digital</h3>
+                <p>Buscamos especialistas de diseño e informatica</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="job-card" data-category="Marketing">
+        <a href="alpina.html">
+            <div class="card-link">
+                <div class="company-logo"><img src="imagenes/SVG/alpina.svg" alt="Alpina Logo"></div>
+                <div class="job-info">
+                    <h3>Alpina Productos Alimenticios S.A.S</h3>
+                    <p>Buscamos nuevos profesionales para puestos de trabajo</p>
+                </div>
+        </a>
+    </div>
+    </div>
+    <div class="job-card" data-category="Diseño web">
+        <a href="sosadiaz.html">
+            <div class="card-link">
+                <div class="company-logo"><img src="imagenes/SVG/sd.svg" alt="SDI Logo"></div>
+                <div class="job-info">
+                    <h3>Sosadiaz</h3>
+                    <p>Buscamos personal para varios puestos de trabajo</p>
+                </div>
+        </a>
+    </div>
+    </div>
+    </div>
+    </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. LÓGICA DEL MENÚ HAMBURGUESA ---
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            if (menuToggle && navMenu) {
+                menuToggle.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Evita conflictos
+                    const isOpen = navMenu.classList.toggle('is-open');
+                    menuToggle.classList.toggle('is-open');
+
+                    // Accesibilidad
+                    menuToggle.setAttribute('aria-expanded', isOpen);
+                    navMenu.setAttribute('aria-hidden', !isOpen);
+                });
+            }
+
+            // --- 2. LÓGICA DEL MENÚ DESPLEGABLE DE PERFIL ---
+            const profileBtn = document.getElementById('profileBtn');
+            const authMenu = document.getElementById('authMenu');
+
+            if (profileBtn && authMenu) {
+                profileBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation(); // Evita cierre inmediato
+                    const isOpen = authMenu.classList.toggle('is-open');
+                    profileBtn.setAttribute('aria-expanded', isOpen);
+                    authMenu.setAttribute('aria-hidden', !isOpen);
+                });
+            }
+
+            // --- 3. CERRAR MENÚS AL HACER CLIC FUERA ---
+            document.addEventListener('click', (e) => {
+                // Cerrar Menú Hamburguesa
+                if (menuToggle && navMenu && !menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                    if (navMenu.classList.contains('is-open')) {
+                        navMenu.classList.remove('is-open');
+                        menuToggle.classList.remove('is-open');
+                    }
+                }
+                // Cerrar Menú Perfil
+                if (profileBtn && authMenu && !profileBtn.contains(e.target) && !authMenu.contains(e.target)) {
+                    if (authMenu.classList.contains('is-open')) {
+                        authMenu.classList.remove('is-open');
+                        profileBtn.setAttribute('aria-expanded', 'false');
+                        authMenu.setAttribute('aria-hidden', 'true');
+                    }
+                }
+            });
+
+            // --- 4. LÓGICA DE FILTRADO ACTUALIZADA PARA EL SELECT ---
+            // Eliminamos la lógica de los botones de categoría
+            const categorySelect = document.getElementById('categorySelect');
+            const jobCards = document.querySelectorAll('.job-card');
+            // Asegúrate de que el ID del input coincida aquí
+            const searchInput = document.getElementById('searchInput');
+
+            // Función central de filtrado
+            function filterJobs(searchText, category) {
+                jobCards.forEach(card => {
+                    const cardCategory = card.getAttribute('data-category');
+                    const cardText = card.textContent.toLowerCase();
+
+                    const textMatch = cardText.includes(searchText.toLowerCase());
+                    // La categoría 'Todos' debe ser un string exacto y es la opción por defecto
+                    const categoryMatch = (category === 'Todos' || cardCategory === category);
+
+                    if (textMatch && categoryMatch) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            // Event listener para el cambio en el Select
+            if (categorySelect && searchInput) {
+                categorySelect.addEventListener('change', (e) => {
+                    const selectedCategory = e.target.value;
+                    filterJobs(searchInput.value, selectedCategory);
+                });
+                // Ejecutar filtro inicial
+                filterJobs(searchInput.value, categorySelect.value);
+            }
+
+            // Event listener para la Búsqueda de texto
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const selectedCategory = categorySelect ? categorySelect.value : 'Todos';
+                    filterJobs(e.target.value, selectedCategory);
+                });
+            }
+
+            // Ejecución del filtro inicial si no se encuentra el select (medida de seguridad)
+            if (!categorySelect && searchInput) {
+                filterJobs(searchInput.value, 'Todos');
+            }
+
+            // PASO 3: INICIALIZAR LUCIDE para que los iconos SVG se rendericen
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+
+</html>

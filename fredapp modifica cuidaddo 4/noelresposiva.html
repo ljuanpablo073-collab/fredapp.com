@@ -1,0 +1,805 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fredapp - Oferta de Empleo y Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ========================================================================= */
+        /* 🎨 1. VARIABLES & RESET */
+        /* ========================================================================= */
+        :root {
+            --color-primary: #1f2a74; /* Azul oscuro */
+            --color-secondary: #f7a723; /* Naranja/Amarillo */
+            --color-background-light: #f5f5f5; /* Fondo general */
+            --color-text-dark: #333;
+            --color-text-light: #fff;
+            --color-card-border: #eee;
+            --font-main: 'Poppins', sans-serif;
+            --border-radius: 12px;
+            --nav-height: 65px;
+            --mobile-breakpoint: 768px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.6;
+            overflow-x: hidden; /* Evita scroll horizontal no deseado */
+        }
+
+        a { text-decoration: none; }
+
+        /* ========================================================================= */
+        /* ⚓ 2. NAVEGACIÓN FIJA (Header) */
+        /* ========================================================================= */
+        .header {
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+            background-color: var(--color-primary); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px;
+        }
+        .header .logo { 
+            color: var(--color-text-light); 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            display: flex;
+            align-items: center;
+        }
+        .header .logo img {
+            height: 40px; 
+            width: auto;
+        }
+        
+        /* Estilos base del menú (Escritorio) */
+        .nav-menu { 
+            display: flex; 
+            align-items: center;
+            gap: 10px; 
+            transition: transform 0.3s ease-in-out;
+        }
+        .nav-menu .nav-link { 
+            background-color: var(--color-secondary); 
+            color: var(--color-primary);
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: background-color 0.3s, transform 0.2s;
+            white-space: nowrap;
+        }
+        .nav-menu .nav-link:hover { 
+            background-color: #fcae2d; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ----------------------------------------------------------- */
+        /* 🍔 ESTILOS DEL MENÚ HAMBURGUESA (Móvil) */
+        /* ----------------------------------------------------------- */
+        .menu-toggle {
+            display: none; /* Oculto en escritorio */
+            background: none;
+            border: none;
+            color: var(--color-text-light);
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 1100; /* Por encima del menú desplegable */
+            padding: 5px 10px;
+        }
+        .menu-toggle span {
+            display: block;
+            width: 30px;
+            height: 3px;
+            background: var(--color-text-light);
+            margin: 6px 0;
+            transition: 0.4s;
+            border-radius: 5px;
+        }
+        /* Animación de la X */
+        .menu-toggle.is-open span:nth-child(1) { transform: rotate(-45deg) translate(-6px, 6px); }
+        .menu-toggle.is-open span:nth-child(2) { opacity: 0; }
+        .menu-toggle.is-open span:nth-child(3) { transform: rotate(45deg) translate(-6px, -6px); }
+        
+        /* Media Query para Móviles */
+        @media (max-width: 768px) { 
+            .menu-toggle { display: block; order: 3; }
+            
+            .nav-menu {
+                position: fixed; /* Fixed para que cubra la pantalla si es necesario */
+                top: var(--nav-height); 
+                right: 0;
+                height: calc(100vh - var(--nav-height)); /* Altura completa menos header */
+                flex-direction: column; 
+                justify-content: flex-start;
+                background-color: var(--color-primary); 
+                width: 250px; /* Ancho del menú lateral */
+                padding: 20px;
+                box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+                
+                /* Lógica de ocultamiento */
+                transform: translateX(100%); 
+                visibility: hidden;
+                transition: transform 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            }
+            
+            /* Clase activa para mostrar el menú */
+            .nav-menu.is-open { 
+                transform: translateX(0); 
+                visibility: visible; 
+            }
+            
+            .nav-menu .nav-link { 
+                width: 100%; 
+                margin-bottom: 15px; 
+                padding: 12px; 
+                text-align: center;
+            }
+            
+            /* Ajuste para el contenedor de usuario en móvil */
+            .user-actions {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                margin-left: 0;
+            }
+        }
+
+        /* ========================================================================= */
+        /* 👤 3. MENÚ DE PERFIL DESPLEGABLE */
+        /* ========================================================================= */
+        .user-actions { position: relative; display: inline-block; margin-left: 10px; }
+        .profile-icon {
+            height: 45px; width: 45px; border-radius: 50%;
+            background-color: #fff; border: 2px solid var(--color-secondary);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; transition: transform 0.2s;
+        }
+        .profile-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-icon:hover { transform: scale(1.05); }
+
+        .auth-menu {
+            position: absolute; top: calc(100% + 10px); right: 0;             
+            background-color: white; border: 1px solid #ccc; border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); min-width: 180px; 
+            padding: 5px 0; z-index: 1010; 
+            opacity: 0; visibility: hidden; transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+        }
+        .auth-menu.is-open { opacity: 1; visibility: visible; transform: translateY(0); }
+        .auth-menu a {
+            display: block; padding: 10px 15px; text-decoration: none;
+            color: var(--color-text-dark); font-weight: 500; transition: background-color 0.2s;
+        }
+        .auth-menu a:hover { background-color: var(--color-background-light); }
+
+        /* ========================================================================= */
+        /* 🖼️ 4. LAYOUT DE 3 COLUMNAS Y CONTENIDO */
+        /* ========================================================================= */
+        .content-wrapper { 
+            padding-top: var(--nav-height); 
+            padding-bottom: 40px;
+            min-height: 100vh;
+        }
+        
+        .main-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr 350px; 
+            gap: 30px;
+            max-width: 1300px;
+            margin: 40px auto;
+            padding: 0 30px;
+        }
+        
+        /* Columna 1 */
+        .sidebar-left { display: flex; flex-direction: column; gap: 20px; }
+        .job-link-btn {
+            background-color: #fff; border: 1px solid var(--color-card-border);
+            border-radius: var(--border-radius); padding: 15px;
+            display: flex; align-items: flex-start; gap: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); transition: all 0.3s ease;
+            cursor: pointer; color: var(--color-text-dark); text-align: left;
+        }
+        .job-link-btn:hover { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
+        .job-link-btn .logo-mini { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; overflow: hidden; border: 1px solid #ddd; }
+        .job-link-btn .logo-mini img { width: 100%; height: 100%; object-fit: cover; }
+        .job-link-btn .text-info { font-size: 0.8rem; line-height: 1.3; }
+        .job-link-btn .text-info strong { display: block; font-size: 0.9rem; color: var(--color-primary); }
+
+        /* Columna 2 */
+        .main-info {
+            background-color: #fff; border-radius: var(--border-radius);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); padding: 30px;
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        .company-header {
+            display: flex; align-items: center; gap: 15px; padding-bottom: 10px;
+            border-bottom: 1px solid var(--color-card-border);
+        }
+        .company-header .logo-large {
+            width: 60px; height: 60px; border-radius: 50%;
+            border: 1px solid var(--color-secondary); flex-shrink: 0; overflow: hidden;
+        }
+        .company-header .logo-large img { width: 100%; height: 100%; object-fit: contain; }
+        .company-header h2 { font-size: 1.6rem; color: var(--color-primary); }
+        .job-description { max-height: 400px; overflow-y: auto; padding-right: 10px; }
+        .job-description p { margin-bottom: 15px; }
+        .apply-btn {
+            background-color: var(--color-secondary); color: var(--color-primary);
+            padding: 15px 30px; border-radius: 10px; font-weight: 700;
+            text-align: center; display: inline-block; transition: background-color 0.2s, transform 0.2s;
+            cursor: pointer; border: none; width: fit-content;
+        }
+        .apply-btn:hover { background-color: #eb991f; transform: translateY(-1px); }
+
+        /* Columna 3: Chat IA */
+        .sidebar-right {
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 20px rgba(31, 42, 116, 0.12);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 520px;
+        }
+        .chat-header {
+            background: linear-gradient(135deg, var(--color-primary), #2d3ea8);
+            color: var(--color-text-light);
+            padding: 15px 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .chat-header .chat-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: var(--color-secondary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; flex-shrink: 0;
+            overflow: hidden;
+        }
+        .chat-header .chat-avatar img { width: 100%; height: 100%; object-fit: contain; }
+        .chat-header .chat-title { display: flex; flex-direction: column; gap: 2px; }
+        .chat-header .chat-title span:first-child { font-size: 0.95rem; font-weight: 700; }
+        .chat-header .chat-title .status {
+            font-size: 0.72rem; font-weight: 400; opacity: 0.85;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .chat-header .chat-title .status::before {
+            content: ''; width: 7px; height: 7px; border-radius: 50%;
+            background: #4ade80; display: inline-block;
+        }
+        .chat-header .ia-badge {
+            margin-left: auto;
+            background: rgba(247, 167, 35, 0.2);
+            border: 1px solid var(--color-secondary);
+            color: var(--color-secondary);
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f8f9fc;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            scroll-behavior: smooth;
+        }
+        .chat-messages::-webkit-scrollbar { width: 5px; }
+        .chat-messages::-webkit-scrollbar-track { background: transparent; }
+        .chat-messages::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        .message-row { display: flex; align-items: flex-end; gap: 8px; }
+        .message-row.user-row { flex-direction: row-reverse; }
+        .msg-icon {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--color-secondary); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; overflow: hidden;
+        }
+        .msg-icon img { width: 100%; height: 100%; object-fit: contain; }
+        .user-row .msg-icon { background: var(--color-primary); }
+        .message {
+            max-width: 78%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            line-height: 1.5;
+            font-size: 0.88rem;
+            word-break: break-word;
+        }
+        .message.company {
+            background-color: #fff;
+            color: var(--color-text-dark);
+            border: 1px solid #e8e8e8;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .message.user {
+            background: linear-gradient(135deg, var(--color-primary), #2d3ea8);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        /* Indicador "escribiendo..." */
+        .typing-indicator {
+            display: flex; align-items: center; gap: 5px;
+            padding: 10px 14px;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            width: fit-content;
+        }
+        .typing-indicator span {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #bbb; display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+        .chat-input {
+            border-top: 1px solid #eee;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            flex-shrink: 0;
+        }
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px 16px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 25px;
+            outline: none;
+            font-family: var(--font-main);
+            font-size: 0.88rem;
+            transition: border-color 0.2s;
+            background: #f8f9fc;
+        }
+        .chat-input input:focus { border-color: var(--color-primary); background: #fff; }
+        .chat-input input:disabled { background: #f0f0f0; cursor: not-allowed; }
+        .chat-send-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--color-primary);
+            border: none; color: #fff; font-size: 1rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+            flex-shrink: 0;
+        }
+        .chat-send-btn:hover { background: var(--color-secondary); color: var(--color-primary); transform: scale(1.08); }
+        .chat-send-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+        .chat-api-warning {
+            font-size: 0.7rem; color: #999; text-align: center;
+            padding: 5px 10px 8px;
+            background: #fff;
+        }
+
+        /* ========================================================================= */
+        /* 📱 5. RESPONSIVIDAD AVANZADA */
+        /* ========================================================================= */
+        
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr 350px; 
+                grid-template-areas: "main sidebar-right" "sidebar-left sidebar-left";
+            }
+            .sidebar-left { grid-area: sidebar-left; flex-direction: row; flex-wrap: wrap; gap: 20px; }
+            .main-info { grid-area: main; }
+            .sidebar-right { grid-area: sidebar-right; }
+            .job-link-btn { flex-grow: 1; max-width: 48%; min-width: 250px; }
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr; 
+                grid-template-areas: "main" "sidebar-right" "sidebar-left";
+                margin: 20px 0; padding: 0 15px; gap: 20px;
+            }
+            .company-header { flex-direction: column; align-items: flex-start; text-align: left; gap: 5px; }
+            .company-header h2 { font-size: 1.4rem; line-height: 1.2; }
+            .sidebar-left { flex-direction: column; }
+            .job-link-btn { max-width: 100%; min-width: auto; }
+            .sidebar-right { height: 400px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="home.html" class="logo">
+        <img src="imagenes/logo/SVG/SVG/logos.svg" alt="Fredapp Logo">
+    </a>
+    
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    
+    <nav class="nav-menu" id="navMenu">
+        <a href="index22.html" class="nav-link">Trabajos</a>
+        <a href="perfilaprendis.html" class="nav-link">Perfil</a>
+        <a href="filtro.html" class="nav-link">Portafolios</a>
+        
+        <div class="user-actions"> 
+            <button class="profile-icon" id="profileBtn">
+                <img src="imagenes/SVG/icono.png" alt="Perfil">
+            </button>
+            <div class="auth-menu" id="authMenu">
+                <a href="/iniciar-sesion.html">Iniciar Sesión</a>
+                <a href="/registrar.html">Registrarse</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="content-wrapper">
+    <div class="main-layout">
+        
+        <aside class="sidebar-left">
+            <h3 style="color: var(--color-primary); margin-bottom: 5px;">Otras Ofertas</h3>
+            <a href="#" class="job-link-btn">
+                <div class="logo-mini"><img src="imagen/logo-mantra.png" alt="Logo"></div>
+                <div class="text-info"><strong>Mantra</strong> Buscando diseñador...</div>
+            </a>
+            <a href="#" class="job-link-btn">
+                <div class="logo-mini"><img src="imagen/logo-gulupa.png" alt="Logo"></div>
+                <div class="text-info"><strong>Gulupa</strong> Estrategas marketing...</div>
+            </a>
+            <a href="#" class="job-link-btn">
+                <div class="logo-mini"><img src="imagen/logo-seonet.png" alt="Logo"></div>
+                <div class="text-info"><strong>Seonet</strong> Especialistas diseño...</div>
+            </a>
+        </aside>
+        
+        <main class="main-info">
+            <div class="company-header">
+                <div class="logo-large"><img src="imagenes/bunny 2.png" alt="Noel Logo"></div>
+                <h2>Compañía de Galletas Noel S.A.S</h2>
+            </div>
+            <div class="job-description">
+                <p><strong>Puesto: Diseñador Creativo Junior.</strong></p>
+                <p>Buscamos talento para nuestras vacantes corporativas en marketing y diseño...</p>
+                <p><strong>Responsabilidades:</strong> Diseño de material gráfico, packaging, estrategias de marketing.</p>
+                <p><strong>Requisitos:</strong> Suite Adobe, Growth Driven Design, residencia en Medellín.</p>
+                <p><strong>Solicitud:</strong> <a href="#">jobs.nutresa.com</a>. Plazo hasta 30 de dic.</p>
+            </div>
+            <button class="apply-btn" id="notifyBtn">Solicitar / Enviar Notificación</button>
+        </main>
+        
+        <aside class="sidebar-right">
+            <div class="chat-header">
+                <div class="chat-avatar">
+                    <img src="imagenes/SVG/noel2.png" alt="Noel" onerror="this.parentElement.textContent='🍪'">
+                </div>
+                <div class="chat-title">
+                    <span>Noel S.A.S — Reclutamiento</span>
+                    <span class="status">Asistente IA disponible</span>
+                </div>
+                <span class="ia-badge">✦ IA</span>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message-row">
+                    <div class="msg-icon">🍪</div>
+                    <div class="message company">¡Hola! 👋 Soy el asistente de reclutamiento de <strong>Compañía de Galletas Noel S.A.S</strong>. Puedo responder tus preguntas sobre la vacante de <em>Diseñador Creativo Junior</em>. ¿En qué te puedo ayudar?</div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" placeholder="Ej: ¿Qué requisitos tiene la vacante?" id="chatInput" maxlength="500">
+                <button class="chat-send-btn" id="sendBtn" title="Enviar mensaje">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+            <div class="chat-api-warning">Respuestas generadas por IA · Pueden contener imprecisiones</div>
+        </aside>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // --- LÓGICA MENÚ HAMBURGUESA ---
+        const menuToggle = document.getElementById('menuToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('is-open');
+            menuToggle.classList.toggle('is-open');
+        });
+
+        // --- LÓGICA MENÚ PERFIL ---
+        const profileBtn = document.getElementById('profileBtn');
+        const authMenu = document.getElementById('authMenu');
+        
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evita cierre inmediato
+            authMenu.classList.toggle('is-open');
+        });
+
+        // Cierra menús al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                navMenu.classList.remove('is-open');
+                menuToggle.classList.remove('is-open');
+            }
+            if (!profileBtn.contains(e.target) && !authMenu.contains(e.target)) {
+                authMenu.classList.remove('is-open');
+            }
+        });
+
+        // --- CHAT IA LOCAL — Noel S.A.S Reclutamiento ---
+        const chatInput = document.getElementById('chatInput');
+        const chatMessages = document.getElementById('chatMessages');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // ════════════════════════════════════════════════════
+        // BASE DE CONOCIMIENTO — NOEL S.A.S
+        // ════════════════════════════════════════════════════
+        const KB = [
+            // SALUDOS — cualquier forma de saludar
+            {
+                keys: ['hola', 'buenas', 'buenas tardes', 'buenas noches', 'buenos dias', 'buenos días', 'hi', 'hey', 'saludos', 'ola', 'buenas', 'que tal', 'qué tal', 'como estas', 'cómo estás', 'buen dia', 'to', 'holi', 'epa', 'ey', 'que hubo', 'quiubo'],
+                res: [
+                    '¡Hola! 👋 Bienvenido/a al asistente de reclutamiento de **Compañía de Galletas Noel S.A.S**. Estoy aquí para ayudarte con todo lo relacionado a nuestra vacante de **Diseñador Creativo Junior**. ¿En qué te puedo ayudar?',
+                    '¡Buenas! 😊 Soy el asistente virtual de **Noel S.A.S**. Puedo orientarte sobre nuestra oferta de empleo, requisitos, proceso de selección y más. ¿Tienes alguna pregunta?',
+                    '¡Hola, bienvenido/a! 🍪 Estoy aquí para resolver tus dudas sobre la vacante de Diseñador Creativo Junior en **Noel S.A.S**. ¿Sobre qué te gustaría saber?'
+                ]
+            },
+            // VACANTE / TRABAJO
+            {
+                keys: ['vacante', 'puesto', 'trabajo', 'cargo', 'posicion', 'posición', 'oferta', 'empleo', 'rol', 'plaza', 'convocatoria'],
+                res: ['Estamos buscando un **Diseñador Creativo Junior** para nuestro equipo de marketing en Medellín. El rol incluye diseño de packaging, material gráfico para redes sociales y campañas de marketing. ¿Te gustaría saber sobre los requisitos o los beneficios?']
+            },
+            // REQUISITOS
+            {
+                keys: ['requisito', 'necesito', 'perfil', 'experiencia', 'necesita', 'piden', 'buscan', 'solicitan', 'que necesito', 'que piden', 'que buscan', 'que se necesita'],
+                res: ['Los requisitos principales son:\n• Suite Adobe completa (Illustrator, Photoshop, InDesign)\n• Conocimientos en Growth Driven Design\n• Portafolio de trabajos previos (¡imprescindible!)\n• Residencia en Medellín o disponibilidad de traslado\n• 1-2 años de experiencia deseable, aunque no excluyente 🙌\n\n¿Te gustaría saber más sobre el proceso de selección o cómo aplicar?']
+            },
+            // SOFTWARE / ADOBE
+            {
+                keys: ['adobe', 'illustrator', 'photoshop', 'indesign', 'software', 'programa', 'herramienta', 'figma', 'after effects', 'canva'],
+                res: ['El dominio de **Suite Adobe** es fundamental: Illustrator para vectores e identidad visual, Photoshop para retoque y composición, e InDesign para piezas editoriales y packaging. Si tienes experiencia con After Effects o Figma, ¡también suma puntos! 💡']
+            },
+            // SALARIO
+            {
+                keys: ['salario', 'sueldo', 'pago', 'remuneracion', 'remuneración', 'cuanto pagan', 'cuánto pagan', 'ganancia', 'plata', 'dinero', 'cuanto gana', 'cuánto gana', 'paga'],
+                res: ['Manejamos un **salario competitivo** acorde al mercado colombiano del sector creativo. El rango exacto se conversa en la entrevista según tu experiencia y portafolio. Adicionalmente contamos con beneficios como seguro médico y descuentos en nuestros productos. 😊\n\n¿Tienes alguna otra pregunta?']
+            },
+            // BENEFICIOS
+            {
+                keys: ['beneficio', 'prestacion', 'prestación', 'seguro', 'descuento', 'ventaja', 'plus', 'adicional', 'que dan', 'ofrecen'],
+                res: ['¡Noel S.A.S ofrece excelentes beneficios! 🎉\n• Salario competitivo\n• Seguro médico complementario\n• Descuentos en productos Noel y Grupo Nutresa\n• Ambiente joven y creativo\n• Crecimiento interno dentro del grupo empresarial\n• Programas de bienestar y formación continua']
+            },
+            // APLICAR / POSTULARSE
+            {
+                keys: ['aplicar', 'postular', 'enviar', 'como aplico', 'cómo aplico', 'postularse', 'candidatura', 'aplicacion', 'hoja de vida', 'cv', 'como me postulo'],
+                res: ['¡Aplicar es muy fácil! Tienes dos opciones:\n\n1️⃣ Ingresa a **jobs.nutresa.com** y busca la vacante de Diseñador Creativo Junior\n2️⃣ Envía tu portafolio y CV a **talentohumano@noel.com**\n\n📅 Plazo: hasta el **30 de diciembre**. ¡Anímate! 🚀']
+            },
+            // FECHA / PLAZO
+            {
+                keys: ['plazo', 'fecha', 'limite', 'límite', 'cuando', 'cuándo', 'hasta cuando', 'tiempo', 'vence', 'cierre'],
+                res: ['La convocatoria está abierta hasta el **30 de diciembre** ⏰. Te recomendamos postularte pronto, ya que el proceso de selección puede iniciar antes de que cierre la convocatoria. ¿Te animas a aplicar?']
+            },
+            // CULTURA / AMBIENTE
+            {
+                keys: ['cultura', 'ambiente', 'equipo', 'como es', 'cómo es', 'valores', 'mision', 'misión', 'vision', 'companerismo', 'clima'],
+                res: ['En **Noel S.A.S** nos mueven el trabajo en equipo, la innovación y el compromiso con la calidad 💪. El ambiente es dinámico, creativo y joven. Valoramos las ideas frescas y la iniciativa propia. Con más de 100 años en el mercado, ¡la estabilidad laboral está garantizada!']
+            },
+            // HISTORIA / EMPRESA
+            {
+                keys: ['noel', 'historia', 'fundada', 'nutresa', 'grupo', 'quienes son', 'quiénes son', 'anos', 'años', 'cuantos anos', 'empresa grande'],
+                res: ['**Compañía de Galletas Noel S.A.S** fue fundada en **1916** en Medellín y es parte del **Grupo Nutresa**, uno de los grupos de alimentación más grandes de Latinoamérica. Contamos con más de 4.000 colaboradores y marcas icónicas como Saltín Noel, Festival, Ducales y Wafer. 🍪']
+            },
+            // PRODUCTOS
+            {
+                keys: ['producto', 'galleta', 'saltin', 'saltín', 'festival', 'ducale', 'wafer', 'chocoramo', 'marca', 'que fabrican', 'que hacen', 'venden'],
+                res: ['Nuestras marcas más queridas son **Saltín Noel, Festival, Ducales y Wafer Noel**, entre muchas otras. Somos líderes en galletas en Colombia con más de un siglo de historia. ¡Seguro alguna vez las has disfrutado! 😄🍪\n\n¿Te gustaría saber más sobre trabajar con nosotros?']
+            },
+            // UBICACIÓN
+            {
+                keys: ['medellin', 'medellín', 'ubicacion', 'ubicación', 'donde', 'dónde', 'sede', 'oficina', 'lugar', 'ciudad'],
+                res: ['Nuestra sede principal está en **Medellín, Antioquia** 📍. La vacante es presencial. Si vives en otra ciudad y te interesa el cargo, la disponibilidad de traslado es un factor positivo que evaluamos con gusto.']
+            },
+            // PROCESO DE SELECCIÓN
+            {
+                keys: ['proceso', 'seleccion', 'selección', 'entrevista', 'etapa', 'pasos', 'como es el proceso', 'cuanto demora', 'cuánto demora'],
+                res: ['El proceso de selección generalmente incluye:\n1. Revisión de portafolio y CV\n2. Entrevista con Talento Humano\n3. Prueba técnica de diseño\n4. Entrevista con el jefe de Marketing\n5. Oferta de vinculación 🎯\n\nDura aproximadamente **2-3 semanas**. ¡Vale la pena! 😊']
+            },
+            // PORTAFOLIO
+            {
+                keys: ['portafolio', 'trabajos', 'muestras', 'proyectos', 'behance', 'link', 'muestra', 'diseños'],
+                res: ['El portafolio es **lo más importante** en este proceso ✨. Debe mostrar proyectos de diseño gráfico: packaging, branding, material publicitario, etc. Puedes compartirlo vía Behance, PDF o enlace personal. ¡Que refleje tu mejor versión!']
+            },
+            // AGRADECIMIENTOS
+            {
+                keys: ['gracias', 'thank', 'perfecto', 'genial', 'excelente', 'chevere', 'chévere', 'bacano', 'listo', 'ok', 'okey', 'entendido', 'claro'],
+                res: [
+                    '¡Con mucho gusto! 😊 Recuerda que puedes aplicar en **jobs.nutresa.com** o escribirnos a **talentohumano@noel.com**. ¡Mucho éxito!',
+                    '¡De nada! 🍪 Si tienes más preguntas, aquí estaré. ¡Esperamos verte pronto en el equipo Noel!',
+                    '¡Fue un placer ayudarte! 🚀 No olvides postularte antes del 30 de diciembre. ¡Éxitos!'
+                ]
+            },
+            // REMOTO / HÍBRIDO
+            {
+                keys: ['remoto', 'casa', 'hibrido', 'híbrido', 'virtual', 'home office', 'teletrabajo', 'presencial'],
+                res: ['Por el momento la vacante es **presencial en Medellín** 🏢. Algunas posiciones del Grupo Nutresa manejan esquemas híbridos, pero te recomendamos consultarlo directamente durante la entrevista.']
+            },
+            // HORARIO
+            {
+                keys: ['jornada', 'horario', 'horas', 'tiempo completo', 'medio tiempo', 'turno', 'dias', 'días'],
+                res: ['La posición es **tiempo completo** (lunes a viernes, jornada estándar) ⏱️. En Noel valoramos el equilibrio entre la vida personal y profesional.']
+            },
+            // INTERÉS EN APLICAR
+            {
+                keys: ['quiero aplicar', 'me interesa', 'quiero postular', 'estoy interesado', 'me intereso', 'quiero trabajar', 'como entro'],
+                res: ['¡Qué buena noticia! 🎉 Para postularte:\n\n1️⃣ Ingresa a **jobs.nutresa.com**\n2️⃣ O envía tu CV y portafolio a **talentohumano@noel.com**\n\n¡Asegúrate de tener tu portafolio actualizado, es lo más importante! ✨ ¿Tienes alguna duda antes de aplicar?']
+            },
+            // PREGUNTAS SOBRE SI CALIFICA
+            {
+                keys: ['califico', 'clasifico', 'aplico', 'sirvo', 'puedo aplicar', 'soy candidato', 'tengo chance', 'hay oportunidad'],
+                res: ['¡Anímate a postularte! 💪 El proceso de selección evaluará tu portafolio y experiencia. Si tienes habilidades en diseño, conoces la Suite Adobe y tienes trabajos para mostrar, ¡tienes una gran oportunidad! Recuerda que 1-2 años de experiencia son deseables pero no excluyentes.']
+            },
+            // PREGUNTAS MUY CORTAS / NO CLARAS
+            {
+                keys: ['que', 'qué', 'como', 'cómo', 'por que', 'por qué', 'cuал', 'cual', 'cuál', 'si', 'no', 'a', 'o'],
+                res: [
+                    'Estoy aquí para ayudarte con todo sobre la vacante de **Diseñador Creativo Junior en Noel S.A.S** 🍪. Puedes preguntarme sobre:\n• Requisitos del cargo\n• Salario y beneficios\n• Cómo aplicar\n• El proceso de selección\n• La empresa\n\n¿Sobre qué tema te gustaría saber más?',
+                    '¡Claro que sí! 😊 Cuéntame más sobre tu pregunta. Puedo ayudarte con información sobre la vacante, los requisitos, el proceso de aplicación o cualquier duda sobre **Noel S.A.S**.']
+            },
+            // EMOJIS / MENSAJES RAROS
+            {
+                keys: ['😊', '🙂', '😁', '😀', '🤔', '👍', '❤️', '🔥', '✅', '💬', '👀', '🤝', '💪', '🥰', '😍'],
+                res: [
+                    '¡Me alegra tu entusiasmo! 😄 ¿Tienes alguna pregunta sobre nuestra vacante de **Diseñador Creativo Junior**? Estoy para ayudarte.',
+                    '¡Hola! 👋 ¿En qué te puedo ayudar hoy? Puedo contarte todo sobre las oportunidades de empleo en **Noel S.A.S**.'
+                ]
+            },
+            // PALABRAS NEGATIVAS / FRUSTRACIÓN
+            {
+                keys: ['mal', 'feo', 'horrible', 'pesimo', 'pésimo', 'mala', 'no sirve', 'no funciona', 'molesto', 'aburrido', 'cansado'],
+                res: ['Entiendo tu frustración y lo siento mucho 😔. Estoy aquí para ayudarte de la mejor manera posible. Si tienes una duda concreta sobre la vacante en **Noel S.A.S**, con gusto te la resuelvo. ¿Hay algo específico en lo que pueda ayudarte?']
+            }
+        ];
+
+        // Respuestas SIEMPRE útiles cuando no hay coincidencia
+        const DEFAULT_RESPONSES = [
+            '¡Gracias por escribirnos! 😊 Soy el asistente de reclutamiento de **Noel S.A.S**. Puedo ayudarte con información sobre:\n• La vacante de **Diseñador Creativo Junior**\n• Requisitos y perfil buscado\n• Salario y beneficios\n• Cómo postularte\n\n¿Sobre qué te gustaría saber?',
+            'Interesante pregunta 🤔. Para ese tipo de consulta, lo mejor es contactar directamente a nuestro equipo de Talento Humano en **talentohumano@noel.com** o visitar **jobs.nutresa.com**. ¡Estarán encantados de ayudarte! ¿Puedo responderte algo más sobre la vacante?',
+            '¡Hola! Soy el asistente de **Compañía de Galletas Noel S.A.S** 🍪. Estoy especializado en resolver dudas sobre nuestra vacante de Diseñador Creativo Junior. ¿Me puedes contar un poco más sobre lo que buscas? ¡Con gusto te oriento!',
+            'Gracias por tu mensaje. Si tienes preguntas específicas sobre el **proceso de selección, requisitos, beneficios o cómo aplicar** a la vacante de Diseñador Creativo Junior en Noel S.A.S, ¡estoy aquí para ayudarte! 😊'
+        ];
+
+        let defaultIdx = 0;
+
+        // ════════════════════════════════════════════════════
+        // MOTOR DE RESPUESTAS — responde a CUALQUIER mensaje
+        // ════════════════════════════════════════════════════
+        function getAIResponse(userText) {
+            const norm = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+            const text = norm(userText);
+
+            // Si el mensaje es muy corto (1-3 caracteres), dar respuesta genérica de bienvenida
+            if (text.length <= 3) {
+                return '¡Hola! 👋 Soy el asistente de reclutamiento de **Noel S.A.S**. ¿En qué te puedo ayudar hoy? Puedo contarte sobre nuestra vacante de Diseñador Creativo Junior, requisitos, beneficios y más.';
+            }
+
+            // Buscar coincidencia en base de conocimiento
+            for (const item of KB) {
+                if (item.keys.some(k => text.includes(norm(k)))) {
+                    const r = item.res;
+                    return r[Math.floor(Math.random() * r.length)];
+                }
+            }
+
+            // Respuesta por defecto rotativa (siempre útil y orientada a la empresa)
+            const def = DEFAULT_RESPONSES[defaultIdx % DEFAULT_RESPONSES.length];
+            defaultIdx++;
+            return def;
+        }
+
+        // ════════════════════════════════════════════════════
+        // FUNCIONES DE UI
+        // ════════════════════════════════════════════════════
+        function addMessage(text, role) {
+            const row = document.createElement('div');
+            row.className = `message-row${role === 'user' ? ' user-row' : ''}`;
+
+            const icon = document.createElement('div');
+            icon.className = 'msg-icon';
+            icon.textContent = role === 'user' ? '👤' : '🍪';
+
+            const bubble = document.createElement('div');
+            bubble.className = `message ${role === 'user' ? 'user' : 'company'}`;
+            // Renderizar **negrita** y saltos de línea
+            bubble.innerHTML = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+
+            row.appendChild(icon);
+            row.appendChild(bubble);
+            chatMessages.appendChild(row);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTyping() {
+            const row = document.createElement('div');
+            row.className = 'message-row';
+            row.id = 'typingRow';
+            const icon = document.createElement('div');
+            icon.className = 'msg-icon';
+            icon.textContent = '🍪';
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator';
+            indicator.innerHTML = '<span></span><span></span><span></span>';
+            row.appendChild(icon);
+            row.appendChild(indicator);
+            chatMessages.appendChild(row);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTyping() {
+            const t = document.getElementById('typingRow');
+            if (t) t.remove();
+        }
+
+        function setLoading(v) {
+            chatInput.disabled = v;
+            sendBtn.disabled = v;
+        }
+
+        // ════════════════════════════════════════════════════
+        // ENVIAR MENSAJE
+        // ════════════════════════════════════════════════════
+        const sendMessage = () => {
+            const text = chatInput.value.trim();
+            if (!text || sendBtn.disabled) return;
+
+            chatInput.value = '';
+            addMessage(text, 'user');
+            setLoading(true);
+            showTyping();
+
+            // Simula tiempo de respuesta natural (0.6s – 1.4s)
+            const delay = 600 + Math.random() * 800;
+            setTimeout(() => {
+                removeTyping();
+                addMessage(getAIResponse(text), 'model');
+                setLoading(false);
+                chatInput.focus();
+            }, delay);
+        };
+
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) sendMessage();
+        });
+
+
+        // --- BOTÓN SOLICITUD ---
+        document.getElementById('notifyBtn').addEventListener('click', () => {
+            alert("Solicitud enviada a Noel S.A.S");
+        });
+
+    });
+</script>
+</body>
+</html>

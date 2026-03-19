@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fredapp - Iniciar Sesión</title>
+    <!-- Enlaces de fuentes y Font Awesome para el ícono de la 'X' -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ========================================================================= */
+        /* 🎨 1. VARIABLES & RESET */
+        /* ========================================================================= */
+        :root {
+            --color-primary: #1f2a74; /* Azul oscuro */
+            --color-secondary: #f7a723; /* Naranja */
+            --color-background-light: #f5f5f5; /* Gris muy claro para el fondo */
+            --color-text-dark: #333;
+            --color-text-light: #fff;
+            --border-radius: 12px;
+            --nav-height: 65px;
+
+            /* ====================================================== */
+            /* ➡️ FONDO FÁCILMENTE REEMPLAZABLE AQUÍ (CSS VARIABLE) */
+            /* ====================================================== */
+            /* * INSTRUCCIONES: 
+             * 1. Reemplaza la URL dentro de url('...') por la ruta de tu imagen.
+             * 2. Si quieres usar el PNG de patrón original, descomenta la línea de abajo.
+             */
+            /* --dynamic-background-url: url('uploaded:inicio sesion.png-dd47ccd8-c9df-4759-8c77-f45e60f84aaa'); */
+
+            /* URL de ejemplo para imagen de fondo completa */
+            --dynamic-background-url: url('imghttps://placehold.co/1920x1080/6A82FB/ffffff?text=Fondo+Editable'); 
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a { text-decoration: none; transition: color 0.3s; }
+        button { cursor: pointer; border: none; font-family: inherit; transition: 0.3s; }
+
+        /* ========================================================================= */
+        /* ⚓ 2. HEADER (Navegación Fija) */
+        /* ========================================================================= */
+        .header {
+            width: 100%; height: var(--nav-height);
+            background-color: var(--color-primary); 
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000; 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px;
+        }
+        .header .logo { 
+            color: var(--color-text-light); 
+            font-size: 1.6rem; 
+            font-weight: 700; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header .logo img {
+            height: 30px; 
+            width: auto;
+        }
+
+        .close-btn { 
+            color: white; 
+            font-size: 1.8rem; 
+            cursor: pointer; 
+            padding: 5px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        .close-btn:hover { 
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        /* ========================================================================= */
+        /* 3. FONDO Y CAJA DE LOGIN */
+        /* ========================================================================= */
+        .login-wrapper {
+            flex-grow: 1; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Capa del fondo que usa la variable CSS */
+        .background-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: var(--dynamic-background-url); 
+            
+            /* Configuraciones para imagen de fondo completa */
+            background-repeat: no-repeat;
+            background-size: cover; /* Cubre todo el área */
+            background-position: center;
+            opacity: 0.9; 
+            
+            z-index: 1;
+        }
+        
+        /* La caja de formulario de inicio de sesión */
+        .login-box {
+            background-color: rgba(255, 255, 255, 0.95); /* Blanco casi opaco */
+            padding: 35px 40px;
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
+            width: 100%;
+            max-width: 400px; 
+            text-align: center;
+            z-index: 2; 
+            /* Efecto de desenfoque para que la imagen de fondo no interfiera tanto */
+            backdrop-filter: blur(5px); 
+            -webkit-backdrop-filter: blur(5px);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .login-box h2 {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .login-box input[type="text"], 
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .login-box input:focus {
+            border-color: var(--color-secondary);
+            box-shadow: 0 0 5px rgba(247, 167, 35, 0.5);
+        }
+        
+        .main-action-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            font-size: 1.1rem;
+            margin-top: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .main-action-btn:hover { 
+            background-color: #fcae2d; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .links-container {
+            margin-top: 25px;
+            font-size: 0.95rem;
+        }
+        .link-text {
+            color: var(--color-primary);
+            display: block;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        .link-text:hover {
+            color: var(--color-secondary);
+            text-decoration: underline;
+        }
+        
+        .back-to-home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #555;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f0f0f0;
+        }
+        .back-to-home-btn:hover {
+            background-color: #e0e0e0;
+            color: var(--color-primary);
+        }
+
+        /* ========================================================================= */
+        /* 4. RESPONSIVIDAD (MÓVIL - Máx 480px) */
+        /* ========================================================================= */
+        @media (max-width: 480px) {
+            .header {
+                height: 55px;
+            }
+            .header .logo {
+                font-size: 1.4rem;
+            }
+            .header .logo img {
+                height: 25px;
+            }
+            .close-btn {
+                font-size: 1.5rem;
+            }
+            .login-box {
+                padding: 30px 25px;
+                margin: 0 15px;
+            }
+            .login-box h2 {
+                font-size: 1.3rem;
+                margin-bottom: 25px;
+            }
+            .login-box input {
+                padding: 10px 12px;
+            }
+            .main-action-btn {
+                font-size: 1rem;
+                padding: 10px;
+            }
+            .links-container {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <!-- Logo Fredapp (Simulación) -->
+        <a href="home.html" class="logo">
+            <!-- Usamos un placeholder para simular el logo PNG -->
+            <img src="https://placehold.co/30x30/1f2a74/ffffff?text=F" onerror="this.onerror=null; this.src='https://placehold.co/30x30/1f2a74/ffffff?text=F';" alt="Logo Fredapp">
+            Fredapp
+        </a>
+        
+        <!-- Símbolo de equis (X) para salir del inicio de sesión -->
+        <a href="index22.html" class="close-btn">
+            <i class="fas fa-times"></i>
+        </a>
+    </header>
+
+    <div class="login-wrapper">
+        
+        <!-- Capa del fondo que toma la imagen de la variable CSS -->
+        <div class="background-layer" id="backgroundLayer"></div>
+
+        <!-- Caja de registro / inicio de sesión -->
+        <div class="login-box">
+            <h2>INICIAR SESIÓN</h2>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="text" id="email" placeholder="Correo" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Contraseña" required>
+                </div>
+                
+                <button type="submit" class="main-action-btn">INICIAR</button>
+            </form>
+            
+            <div class="links-container">
+                <!-- Botón de "Olvidaste tu contraseña" (simulación de botón) -->
+                <a href="#" class="link-text" onclick="showCustomAlert('Simular: Redirigir a Recuperación de Contraseña')">
+                    ¿Olvidaste tu contraseña?
+                </a>
+                
+                <!-- Texto y botón de "Crear Cuenta" (simulación de botón) -->
+                <a href="#" class="link-text" onclick="showCustomAlert('Simular: Redirigir a Crear Cuenta')">
+                    ¿No tienes una cuenta? **Crear cuenta**
+                </a>
+            </div>
+            
+            <!-- Botón de redirección a la página principal de bolsa de empleo -->
+            <a href="index22.html" class="back-to-home-btn" onclick="showCustomAlert('Simular: Redirigir a la Bolsa de Empleo')">
+                <i class="fas fa-arrow-left"></i> Volver a la Bolsa de Empleo
+            </a>
+        </div>
+    </div>
+    
+    <!-- Placeholder para el mensaje Modal (Reemplaza a alert()) -->
+    <div id="customAlert" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 5000;">
+        <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-width: 400px; text-align: center;">
+            <p id="alertMessage" style="color: var(--color-primary); font-weight: 600; font-size: 1.1rem; margin-bottom: 20px;"></p>
+            <button onclick="document.getElementById('customAlert').style.display='none';" style="background-color: var(--color-secondary); color: var(--color-primary); padding: 8px 20px; border-radius: 6px; font-weight: 700;">Aceptar</button>
+        </div>
+    </div>
+
+
+    <script>
+        // Función para mostrar un modal personalizado en lugar de alert()
+        window.showCustomAlert = function(message) {
+            document.getElementById('alertMessage').textContent = message;
+            document.getElementById('customAlert').style.display = 'flex';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            
+            // Simulación de envío de formulario
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                if (email && password) {
+                    showCustomAlert(`Intentando iniciar sesión con: ${email}`);
+                } else {
+                    showCustomAlert('Por favor, ingresa tu correo y contraseña.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

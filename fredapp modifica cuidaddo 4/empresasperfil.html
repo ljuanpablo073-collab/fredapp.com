@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fredapp - Perfil de Usuario</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+</style>
+    
+    <style>
+        /* ========================================================================= */
+        /* 🎨 1. VARIABLES & RESET */
+        /* ========================================================================= */
+        :root {
+            --color-primary: #2A2F6F; /* Azul oscuro */
+            --color-secondary: #F6A320; /* Naranja */
+            --color-background-light: #f5f5f5;
+            --color-text-dark: #333;
+            --color-text-light: #fff;
+            --border-radius: 12px;
+            --nav-height: 65px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main, 'Poppins', sans-serif);
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; }
+        button { cursor: pointer; border: none; font-family: inherit; transition: 0.3s; }
+
+        /* ========================================================================= */
+        /* ⚓ 2. HEADER (Navegación) */
+        /* ========================================================================= */
+        .header {
+            width: 100%; height: var(--nav-height);
+            background-color: var(--color-primary); 
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px;
+            position: fixed; top: 0; left: 0;
+        }
+        .header .logo { 
+            color: var(--color-text-light); font-size: 1.5rem; font-weight: 700; 
+            display: flex; align-items: center;
+        }
+
+        .nav-menu { 
+            display: flex; align-items: center; gap: 15px; 
+            transition: transform 0.3s ease-in-out; 
+            margin-left: auto; 
+            margin-right: 15px;
+        }
+
+        .nav-menu .nav-link { 
+            background-color: var(--color-secondary); color: var(--color-primary); 
+            padding: 8px 20px; border-radius: 10px; font-weight: 600; 
+            border: 2px solid #F6A320; transition: 0.3s; white-space: nowrap; 
+            
+        }
+        .nav-menu .nav-link:nth-child(2) { /* Perfil Activo en escritorio */
+            background-color: #fcae2d; color: var(--color-primary); 
+        }
+        .nav-menu .nav-link:hover { 
+            background-color: #fcae2d; transform: translateY(-2px); 
+        }
+
+        .menu-toggle { display: none; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; z-index: 1100; }
+
+        /* ========================================================================= */
+        /* 3. ZONA DE PERFIL Y GRID PRINCIPAL */
+        /* ========================================================================= */
+        .main-container {
+            max-width: 1400px; margin: 0 auto; padding: 20px;
+            padding-top: calc(var(--nav-height) + 20px);
+        }
+
+        .profile-header {
+            position: relative;
+            width: 100%; height: 250px;
+            margin-bottom: 30px; border-radius: var(--border-radius);
+            overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .banner-img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: filter 0.3s; }
+        .banner-img:hover { filter: brightness(0.8); }
+
+        .profile-info-overlay {
+            position: absolute; bottom: 20px; left: 30px;
+            display: flex; align-items: center; gap: 20px;
+        }
+
+        .profile-avatar-large {
+            width: 100px; height: 100px; border-radius: 50%; border: 4px solid white;
+            overflow: hidden; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            background-color: #ddd;
+        }
+        .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-avatar-large:hover { opacity: 0.9; }
+
+        .profile-name {
+            color: white; font-size: 1.8rem; font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7); cursor: pointer;
+        }
+        .profile-name:hover { text-decoration: underline; }
+
+        #bannerInput, #avatarInput { display: none; }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px; 
+            gap: 30px;
+        }
+
+        /* --- SECCIÓN IZQUIERDA: NOTIFICACIONES --- */
+        .notifications-sidebar { display: flex; flex-direction: column; gap: 15px; }
+        .notif-card {
+            background-color: #fff; border-radius: var(--border-radius);
+            overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            height: 150px; display: flex; justify-content: center; align-items: center;
+            padding: 20px; text-align: center;
+            border: 2px solid var(--color-secondary);
+        }
+        .notif-btn {
+            width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            text-align: center; background-color: rgba(247, 167, 35, 0.1);
+            color: #333; font-weight: 600; font-size: 1.1rem;
+            border-radius: 10px; transition: 0.3s;
+        }
+        .notif-card:hover .notif-btn {
+            background-color: var(--color-secondary); color: var(--color-primary);
+        }
+
+        /* --- SECCIÓN CENTRAL: TRABAJOS --- */
+        .works-feed {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            align-content: start;
+        }
+
+        .work-card {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .work-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+
+        .work-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(31, 42, 116, 0.85); color: white;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease;
+            font-size: 1.2rem; font-weight: 700; padding: 10px; text-align: center;
+        }
+        .work-card:hover .work-overlay { opacity: 1; }
+        .work-card:hover img { transform: scale(1.05); }
+
+        /* CUADRO GRIS PARA SUBIR TRABAJO */
+        .add-work-card {
+            background-color: #e0e0e0; 
+            border: 3px dashed #999; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .add-work-content {
+            display: flex; flex-direction: column; align-items: center; gap: 10px; color: #555;
+        }
+        .add-work-content i { font-size: 3rem; color: #777; transition: 0.3s; }
+        .add-work-content span { font-weight: 700; font-size: 1.1rem; }
+        .add-work-card:hover { background-color: #d6d6d6; transform: translateY(-3px); }
+        .add-work-card:hover i { color: var(--color-secondary); }
+
+        /* --- SECCIÓN DERECHA: EDICIÓN --- */
+        .edit-sidebar {
+            background-color: #fcfcfc; border: 1px solid #ddd;
+            border-radius: var(--border-radius); padding: 20px;
+            height: fit-content; display: flex; flex-direction: column; gap: 20px;
+        }
+        .edit-title { color: var(--color-secondary); font-weight: 700; font-size: 1.2rem; margin-bottom: 10px; text-align: center; }
+        .edit-option {
+            display: flex; align-items: center; gap: 10px;
+            color: var(--color-text-dark); font-weight: 600;
+            cursor: pointer; padding: 10px; border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .edit-option:hover { background-color: #eee; }
+        .edit-option i { font-size: 1.2rem; }
+
+        .publish-btn {
+            margin-top: 20px; background-color: var(--color-secondary);
+            color: white; font-weight: 700; padding: 12px;
+            border-radius: 20px; text-align: center; transition: 0.3s;
+        }
+        .publish-btn:hover { background-color: #e69c1e; transform: scale(1.02); }
+
+
+        /* ========================================================================= */
+        /* 4. ESTILOS DEL MODAL DE PREVISUALIZACIÓN */
+        /* ========================================================================= */
+        #workPreviewModal {
+            display: none; /* Oculto por defecto, se muestra con JS */
+            position: fixed;
+            z-index: 4000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content h3 {
+            color: var(--color-primary);
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .modal-content p {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .close-modal-btn {
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: inline-block;
+        }
+        .close-modal-btn:hover { background-color: #e69c1e; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========================================================================= */
+        /* 5. RESPONSIVIDAD (MÓVIL) */
+        /* ========================================================================= */
+        @media (max-width: 900px) {
+            .content-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .header { align-items: center; }
+            .menu-toggle { display: block; margin-left: auto; }
+            
+            .nav-menu { 
+                position: fixed; top: var(--nav-height); right: 0; 
+                height: calc(100vh - var(--nav-height)); width: 250px; 
+                background-color: var(--color-primary); 
+                flex-direction: column; justify-content: flex-start; padding: 30px;
+                transform: translateX(100%); transition: transform 0.3s ease; 
+                visibility: hidden; box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+                margin: 0; z-index: 2000;
+            }
+            .nav-menu.is-open { transform: translateX(0); visibility: visible; }
+            
+            /* BOTONES NARANJAS EN MÓVIL (Menú Hamburguesa) */
+            .nav-menu .nav-link { 
+                background-color: var(--color-secondary); 
+                color: var(--color-primary); 
+                border: 2px solid #e69c1e; 
+                width: 100%; text-align: center; margin-bottom: 15px; 
+                border-radius: 10px; padding: 10px;
+            }
+            
+            .nav-menu .nav-link:hover {
+                 background-color: #fcae2d; 
+                 transform: translateY(-2px);
+            }
+
+            .mobile-profile-container {
+                display: flex !important; align-items: center; gap: 10px;
+                margin-bottom: 30px; padding-bottom: 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.2); width: 100%;
+            }
+            .mobile-profile-pic { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--color-secondary); overflow: hidden; }
+            .mobile-profile-pic img { width: 100%; height: 100%; object-fit: cover; }
+            .mobile-profile-name { color: white; font-weight: 600; }
+
+            .profile-header { height: 200px; }
+            .profile-info-overlay { flex-direction: column; align-items: flex-start; left: 20px; bottom: 10px; gap: 10px; }
+            .profile-name { font-size: 1.4rem; }
+            .profile-avatar-large { width: 80px; height: 80px; }
+
+            .works-feed { grid-template-columns: 1fr; } 
+        }
+        .mobile-profile-container { display: none; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="home.html" class="logo"><img src="imagenes/logo/1x/logo_1.png" alt=""> </a>
+        
+        <nav class="nav-menu" id="navMenu">
+            <div class="mobile-profile-container" onclick="alert('Ir a configuración de perfil')">
+                <div class="mobile-profile-pic">
+                    <img src="https://i.pravatar.cc/150?img=8" alt="Perfil" id="mobileAvatar">
+                </div>
+                <div class="mobile-profile-name">Juan Pablo</div>
+            </div>
+
+            <a href="index22.html" class="nav-link">Trabajos</a>
+            <a href="perfilsub.html" class="nav-link">Perfil</a>
+            <a href="filtro.html" class="nav-link">Portafolios</a>
+        </nav>
+
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    </header>
+
+    <div class="main-container">
+        
+        <div class="profile-header">
+            <input type="file" id="bannerInput" accept="image/*" onchange="updateImage(this, 'bannerImg')">
+            <img src="https://picsum.photos/1400/400?random=1" alt="Banner de Fondo" class="banner-img" id="bannerImg" onclick="triggerUpload('bannerInput')">
+            
+            <div class="profile-info-overlay">
+                <input type="file" id="avatarInput" accept="image/*" onchange="updateImage(this, 'mainAvatar')">
+                <div class="profile-avatar-large" onclick="triggerUpload('avatarInput')">
+                    <img src="https://i.pravatar.cc/150?img=8" alt="Foto Perfil" id="mainAvatar">
+                </div>
+                <div class="profile-name" id="profileName" onclick="editName()">
+                    Juan Pablo Pulgarin Mendoza <i class="fas fa-pen" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            
+            <aside class="notifications-sidebar">
+                <div class="notif-card"><div class="notif-btn">Hay nuevos talentos en el diseño</div></div>
+                <div class="notif-card"><div class="notif-btn">Nuevas peticiones de tu solicutud</div></div>
+                <div class="notif-card"><div class="notif-btn">SENA Proyectos</div></div>
+            </aside>
+
+            <main class="works-feed">
+                
+                <div class="work-card add-work-card" onclick="location.href='subidasi.html';">
+                    <div class="add-work-content">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Subir nuevo trabajo</span>
+                    </div>
+                </div>
+
+                <div class="work-card" onclick="showWorkDetails('asdasd', 'Un proyecto de publicidad digital muy efectivo para una marca de bebidas asddasasdasdasda.')">
+                    <img src="https://picsum.photos/500/400?random=10" alt="Trabajo 1">
+                    <div class="work-overlay">Fografia</div>
+                </div>
+                <div class="work-card" onclick="showWorkDetails('App UI Design', 'Diseño completo de la interfaz de usuario para una aplicación de fitness.')">
+                    <img src="imagenes/trabajos ejemplo/app diseñe.png" alt="Trabajo 2">
+                    <div class="work-overlay">App UI Design</div>
+                </div>
+                <div class="work-card" onclick="showWorkDetails('Magazine Layout', 'Creación de un diseño moderno y minimalista para una revista de arte.')">
+                    <img src="https://picsum.photos/500/400?random=12" alt="Trabajo 3">
+                    <div class="work-overlay">Magazine Layout</div>
+                </div>
+                <div class="work-card" onclick="showWorkDetails('Food Photography', 'Serie de fotografías gastronómicas profesionales para un restaurante de alta cocina.')">
+                    <img src="https://picsum.photos/500/400?random=13" alt="Trabajo 4">
+                    <div class="work-overlay">Food Photography</div>
+                </div>
+                <div class="work-card" onclick="showWorkDetails('Web Development', 'Desarrollo front-end de un sitio web corporativo utilizando React y Sass.')">
+                    <img src="https://picsum.photos/500/400?random=15" alt="Trabajo 6">
+                    <div class="work-overlay">Web Development</div>
+                </div>
+            </main>
+
+            <aside class="edit-sidebar">
+                <div class="edit-title">Perfil de usuario</div>
+                <div class="edit-option" onclick="triggerUpload('avatarInput')"><i class="fas fa-pencil-alt"></i> Editar Perfil (Foto/Banner)</div>
+                <div class="edit-option" onclick="alert('Ir a configuración avanzada PRO')"><i class="fas fa-pencil-alt"></i> Personalizar pro</div>
+                <div style="flex-grow: 1;"></div>
+                <button class="publish-btn" onclick="alert('¡Disponibilidad Activada!')">Activar disponibilidad</button>
+            </aside>
+
+        </div>
+    </div>
+    
+    <div id="workPreviewModal" style="display: none;">
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <img id="modalImage" src="" alt="Imagen del proyecto" style="display: none;">
+            <p id="modalDescription">xcvxcvxvxcv</p>
+            <p style="font-style: italic; font-size: 0.9rem;">dfgxdcgxcdgbxc</p>
+            <button class="close-modal-btn" onclick="hideWorkDetails()">Cerrar Previsualización</button>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+            const modal = document.getElementById('workPreviewModal');
+            
+            // Lógica del menú hamburguesa
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navMenu.classList.toggle('is-open');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                    navMenu.classList.remove('is-open');
+                }
+            });
+
+            // Cerrar modal al hacer clic fuera del contenido
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    hideWorkDetails();
+                }
+            });
+
+
+            // --- FUNCIONES DE INTERACCIÓN DE PERFIL ---
+            
+            window.editName = function() {
+                const currentName = document.getElementById('profileName').innerText.split(' ')[0]; 
+                const newName = prompt("Edita tu nombre de perfil:", currentName);
+                if (newName && newName.trim() !== "") {
+                    document.getElementById('profileName').innerHTML = newName + ' <i class="fas fa-pen" style="font-size: 0.8rem; opacity: 0.7;"></i>';
+                    document.querySelector('.mobile-profile-name').textContent = newName;
+                }
+            }
+
+            window.triggerUpload = function(inputId) {
+                document.getElementById(inputId).click();
+            }
+
+            window.updateImage = function(input, imgId) {
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById(imgId).src = e.target.result;
+                        if (imgId === 'mainAvatar') {
+                            document.getElementById('mobileAvatar').src = e.target.result;
+                        }
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+            
+            window.uploadNewWork = function() {
+                alert("Redirigiendo a la zona de subida de proyectos...");
+            }
+
+            // --- FUNCIÓN DEL MODAL DE DETALLES DE TRABAJO ---
+
+            window.showWorkDetails = function(title, description) {
+                const modal = document.getElementById('workPreviewModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalDescription = document.getElementById('modalDescription');
+                const modalImage = document.getElementById('modalImage');
+
+                // Busca la imagen de la tarjeta que fue clickeada
+                const clickedCard = event.currentTarget; 
+                const imageSrc = clickedCard.querySelector('img') ? clickedCard.querySelector('img').src : '';
+
+                modalTitle.textContent = title;
+                modalDescription.textContent = description;
+                
+                if (imageSrc) {
+                    modalImage.src = imageSrc;
+                    modalImage.style.display = 'block';
+                } else {
+                    modalImage.style.display = 'none';
+                }
+
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; 
+            }
+
+            window.hideWorkDetails = function() {
+                const modal = document.getElementById('workPreviewModal');
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>
+</body>
+</html>

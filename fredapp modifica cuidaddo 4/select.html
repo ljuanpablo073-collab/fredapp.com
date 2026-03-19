@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fredapp - Portafolios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ========================================================================= */
+        /* 🎨 1. VARIABLES & RESET */
+        /* ========================================================================= */
+        :root {
+            --color-primary: #1f2a74; /* Azul oscuro */
+            --color-secondary: #f7a723; /* Naranja */
+            --color-background-light: #f5f5f5;
+            --color-text-dark: #333;
+            --color-text-light: #fff;
+            --border-radius: 12px;
+            --nav-height: 65px;
+            --filter-dropdown-height: 85vh;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body.modal-open { overflow: hidden !important; }
+
+        a { text-decoration: none; }
+        ul { list-style: none; }
+
+        /* ========================================================================= */
+        /* ⚓ 2. HEADER (Navegación) */
+        /* ========================================================================= */
+        .header {
+            width: 100%; height: var(--nav-height);
+            background-color: var(--color-primary); 
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px;
+            position: fixed; top: 0; left: 0;
+        }
+        .header .logo { 
+            color: var(--color-text-light); font-size: 1.5rem; font-weight: 700; 
+            display: flex; align-items: center;
+        }
+        .header .logo img { height: 40px; width: auto; margin-right: 10px; } /* Ajuste si usas imagen */
+
+        .menu-toggle { display: none; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; z-index: 1100; }
+
+        .nav-menu { 
+            display: flex; align-items: center; gap: 15px; 
+            transition: transform 0.3s ease-in-out; 
+            margin-left: auto; margin-right: 15px;
+        }
+
+        .nav-menu .nav-link { 
+            background-color: var(--color-secondary); color: var(--color-primary); 
+            padding: 8px 20px; border-radius: 10px; font-weight: 600; 
+            border: 2px solid #e69c1e; transition: 0.3s; white-space: nowrap; 
+        }
+        .nav-menu .nav-link:hover { 
+            background-color: #fcae2d; transform: translateY(-2px); 
+        }
+
+        .user-actions { position: relative; }
+        .profile-icon { 
+            height: 45px; width: 45px; border-radius: 50%; 
+            background-color: #fff; border: 2px solid var(--color-secondary); 
+            cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center;
+        }
+        .profile-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+        .auth-menu { 
+            position: absolute; top: 110%; right: 0; background: white; 
+            border: 1px solid #ccc; border-radius: 5px; min-width: 150px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 5px 0; 
+            opacity: 0; visibility: hidden; transform: translateY(-10px); transition: 0.3s; z-index: 1001;
+        }
+        .auth-menu.is-open { opacity: 1; visibility: visible; transform: translateY(0); }
+        .auth-menu a { display: block; padding: 10px 15px; color: var(--color-text-dark); transition: 0.2s; }
+        .auth-menu a:hover { background-color: var(--color-background-light); }
+
+        /* Media Query Móvil Header */
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; order: 3; margin-left: auto; }
+            .nav-menu { 
+                position: fixed; top: var(--nav-height); right: 0; 
+                height: calc(100vh - var(--nav-height)); width: 250px; 
+                background-color: var(--color-primary); 
+                flex-direction: column; justify-content: flex-start; padding: 30px;
+                transform: translateX(100%); visibility: hidden; 
+                margin: 0; z-index: 2000;
+            }
+            .nav-menu.is-open { transform: translateX(0); visibility: visible; }
+            .nav-menu .nav-link { width: 100%; text-align: center; margin-bottom: 15px; background-color: transparent; border: none; color: white; }
+            .user-actions { margin: 0; width: 100%; display: flex; justify-content: center; margin-bottom: 20px; order: -1; } /* Perfil arriba en móvil */
+        }
+
+        /* ========================================================================= */
+        /* 🔍 3. CONTROLES SUPERIORES (Filtro Select + Búsqueda) */
+        /* ========================================================================= */
+        .main-container {
+            max-width: 1200px; margin: 0 auto; padding: 20px;
+            padding-top: calc(var(--nav-height) + 20px);
+        }
+
+        .controls-row { 
+            display: flex; gap: 15px; align-items: center; margin-bottom: 30px; 
+        }
+
+        /* --- NUEVO SELECTOR DE CATEGORÍA --- */
+        .category-select-container {
+            position: relative;
+            flex-shrink: 0; /* Evita que se encoja demasiado */
+            width: 220px; 
+        }
+        
+        .styled-select {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid #ccc;
+            border-radius: 25px; /* Bordes redondeados como la barra de búsqueda */
+            outline: none;
+            font-family: var(--font-main, 'Poppins', sans-serif);
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--color-text-dark);
+            background-color: white;
+            cursor: pointer;
+            /* Icono de flecha personalizado */
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 1.5rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .styled-select:focus {
+            border-color: var(--color-secondary);
+            box-shadow: 0 0 0 3px rgba(247, 167, 35, 0.1);
+        }
+        /* ----------------------------------- */
+
+        .main-search { 
+            flex-grow: 1; /* Ocupa el resto del espacio */
+            position: relative; 
+        }
+        .main-search input { 
+            width: 100%; padding: 12px 20px 12px 45px; 
+            border: 1px solid #ccc; border-radius: 25px; 
+            outline: none; font-family: inherit; font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .main-search input:focus { border-color: var(--color-secondary); }
+        .main-search i { 
+            position: absolute; left: 15px; top: 50%; 
+            transform: translateY(-50%); color: #888; 
+        }
+
+        /* Botones Rápidos (Lo más visto, etc.) */
+        .quick-buttons { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
+        .q-btn { 
+            background-color: var(--color-secondary); color: var(--color-primary); 
+            padding: 10px 30px; border-radius: 25px; border: none; 
+            font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit;
+        }
+        .q-btn:hover { background-color: #e69c1e; transform: translateY(-2px); }
+
+        /* ========================================================================= */
+        /* 📦 4. GRID DE PORTAFOLIOS */
+        /* ========================================================================= */
+        .portfolio-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .port-card { 
+            position: relative; border-radius: 12px; overflow: hidden; 
+            aspect-ratio: 4/3; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            transition: transform 0.3s ease;
+        }
+        .port-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        .card-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(31, 42, 116, 0.85); color: white; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            opacity: 0; transition: opacity 0.3s ease; 
+        }
+        .port-card:hover .card-overlay { opacity: 1; }
+        .port-card:hover img { transform: scale(1.05); }
+        .user-name { font-weight: 700; font-size: 1.1rem; text-align: center; padding: 10px; }
+        
+        /* Responsividad del Grid y Controles */
+        @media (max-width: 1024px) { .portfolio-grid { grid-template-columns: repeat(3, 1fr); } }
+        
+        @media (max-width: 768px) { 
+            .portfolio-grid { grid-template-columns: repeat(2, 1fr); } 
+            .controls-row { 
+                flex-direction: column; /* Apilar select y búsqueda en móvil */
+                align-items: stretch; 
+                gap: 15px;
+            }
+            .category-select-container, .main-search { width: 100%; } /* Ancho completo en móvil */
+        }
+        @media (max-width: 480px) { .portfolio-grid { grid-template-columns: 1fr; } }
+
+
+        /* ========================================================================= */
+        /* 🖼️ 5. MODAL DE TRABAJO (Lightbox) */
+        /* ========================================================================= */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 1100px; height: 85vh; border-radius: 15px; display: flex; overflow: hidden; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #333; cursor: pointer; z-index: 10; }
+        .modal-left { flex: 3; padding: 30px; overflow-y: auto; background: #cecccc; }
+        .modal-left h2 { color: var(--color-primary); margin-bottom: 10px; }
+        .modal-left img { width: 100%; border-radius: 8px; margin-bottom: 15px; }
+        .modal-left p { margin-bottom: 15px; color: #555; }
+        .modal-sidebar { flex: 1; background: white; border-left: 1px solid #eee; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; }
+        .modal-profile-pic { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid var(--color-secondary); margin-bottom: 20px; cursor: pointer; }
+        .modal-profile-pic img { width: 100%; height: 100%; object-fit: cover; }
+        .sidebar-username { font-weight: 700; color: var(--color-primary); margin-bottom: 20px; }
+        .action-btn { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #eee; background: white; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: #333; font-family: inherit; font-weight: 500; transition: 0.3s; }
+        .action-btn i { width: 25px; text-align: center; color: var(--color-primary); font-size: 1.1rem; }
+        .action-btn:hover { background: #f0f0f0; }
+        .btn-valorar:hover i { color: red; animation: heartbeat 1s infinite; }
+        .btn-compartir:hover i { color: var(--color-secondary); animation: rotate 0.5s ease-in-out; }
+        @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 768px) {
+            .modal-content { flex-direction: column-reverse; height: 95vh; overflow-y: auto; }
+            .modal-left { flex: none; height: auto; }
+            .modal-sidebar { flex: none; border-left: none; border-top: 1px solid #eee; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="home.html" class="logo">
+            <img src="imagen/logo.png" alt="Logo Fredapp" onerror="this.style.display='none'"> 
+            <!-- Si no hay imagen, el texto se muestra. Ajusta según tu logo real -->
+            <span>Fredapp</span>
+        </a>
+        
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        
+        <nav class="nav-menu" id="navMenu">
+            <div class="user-actions"> 
+                <button class="profile-icon" id="profileBtn">
+                    <img src="imagen/perfil-usuario.jpg" alt="Perfil">
+                </button>
+                <div class="auth-menu" id="authMenu">
+                    <a href="#">Iniciar Sesión</a>
+                    <a href="#">Registrarse</a>
+                </div>
+            </div>
+
+            <a href="#" class="nav-link">Trabajos</a>
+            <a href="#" class="nav-link">Perfil</a>
+            <a href="#" class="nav-link">Portafolios</a>
+        </nav>
+    </header>
+
+    <div class="main-container">
+        
+        <div class="controls-row">
+            
+            <!-- 🟢 NUEVO: SELECTOR DE CATEGORÍAS AL LADO DE LA BÚSQUEDA -->
+            <div class="category-select-container">
+                <select id="categorySelect" class="styled-select" onchange="handleCategoryChange(this.value)">
+                    <!-- Las opciones se basan en tus botones anteriores -->
+                    <option value="todos" selected>Todos</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="diseno_web">Diseño Web</option>
+                    <option value="ilustrador">Ilustrador</option>
+                    <option value="edicion">Edición</option>
+                    <!-- Puedes agregar más categorías aquí -->
+                    <option value="branding">Branding</option>
+                    <option value="fotografia">Fotografía</option>
+                </select>
+            </div>
+
+            <!-- Barra de Búsqueda -->
+            <div class="main-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar trabajos, empresas o palabras clave...">
+            </div>
+        </div>
+
+        <div class="quick-buttons">
+            <button class="q-btn">Lo más visto</button>
+            <button class="q-btn">Lo más buscado</button>
+            <button class="q-btn">Reciente</button>
+        </div>
+
+        <div class="portfolio-grid">
+            <!-- 12 Cards de ejemplo -->
+            <div class="port-card" onclick="openModal()">
+                <img src="https://picsum.photos/400/300?random=1" alt="Trabajo">
+                <div class="card-overlay"><span class="user-name">Andrea Diseñadora</span></div>
+            </div>
+            <div class="port-card" onclick="openModal()">
+                <img src="https://picsum.photos/400/300?random=2" alt="Trabajo">
+                <div class="card-overlay"><span class="user-name">Code Master</span></div>
+            </div>
+            <div class="port-card" onclick="openModal()">
+                <img src="https://picsum.photos/400/300?random=3" alt="Trabajo">
+                <div class="card-overlay"><span class="user-name">Pixel Art</span></div>
+            </div>
+            <div class="port-card" onclick="openModal()">
+                <img src="https://picsum.photos/400/300?random=4" alt="Trabajo">
+                <div class="card-overlay"><span class="user-name">Marketing Pro</span></div>
+            </div>
+            <div class="port-card" onclick="openModal()"><img src="https://picsum.photos/400/300?random=5" alt="T"><div class="card-overlay"><span class="user-name">User 5</span></div></div>
+            <div class="port-card" onclick="openModal()"><img src="https://picsum.photos/400/300?random=6" alt="T"><div class="card-overlay"><span class="user-name">User 6</span></div></div>
+            <div class="port-card" onclick="openModal()"><img src="https://picsum.photos/400/300?random=7" alt="T"><div class="card-overlay"><span class="user-name">User 7</span></div></div>
+            <div class="port-card" onclick="openModal()"><img src="https://picsum.photos/400/300?random=8" alt="T"><div class="card-overlay"><span class="user-name">User 8</span></div></div>
+            <div class="port-card" onclick="openModal()"><img src="https://picsum.photos/400/300?random=9" alt="T"><div class="card-overlay"><span class="user-name">User 9</span></div></div>
+            <div class="port-card" onclick="openModal()"><img src="https://picsum.photos/400/300?random=10" alt="T"><div class="card-overlay"><span class="user-name">User 10</span></div></div>
+            <div class="port-card" onclick="openModal()"><img src="https://picsum.photos/400/300?random=11" alt="T"><div class="card-overlay"><span class="user-name">User 11</span></div></div>
+            <div class="port-card" onclick="openModal()"><img src="https://picsum.photos/400/300?random=12" alt="T"><div class="card-overlay"><span class="user-name">User 12</span></div></div>
+        </div>
+
+    </div>
+
+    <!-- MODAL DE TRABAJO -->
+    <div class="modal-overlay" id="workModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            
+            <div class="modal-left">
+                <h2>Campaña de Branding "Futuro"</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Este es el contenido principal del trabajo.</p>
+                <img src="https://picsum.photos/800/500?random=20" alt="Detalle 1">
+                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Aquí puedes ver más detalles y descripciones del proyecto.</p>
+                <img src="https://picsum.photos/800/500?random=21" alt="Detalle 2">
+            </div>
+
+            <div class="modal-sidebar">
+                <div class="modal-profile-pic" onclick="alert('Ir al perfil completo')">
+                    <img src="https://i.pravatar.cc/150?img=12" alt="Perfil Creador">
+                </div>
+                <div class="sidebar-username">Andrea Diseñadora</div>
+
+                <button class="action-btn"><i class="fas fa-concierge-bell"></i> Servicio</button>
+                <button class="action-btn btn-compartir"><i class="fas fa-share-alt"></i> Compartir</button>
+                <button class="action-btn btn-valorar"><i class="fas fa-heart"></i> Valorar</button>
+                <button class="action-btn"><i class="fas fa-archive"></i> Archivar</button>
+                <button class="action-btn"><i class="fas fa-envelope"></i> Contactar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Referencias
+            const workModal = document.getElementById('workModal');
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+            const profileBtn = document.getElementById('profileBtn');
+            const authMenu = document.getElementById('authMenu');
+
+            // 1. MODAL DE TRABAJO
+            window.openModal = function() {
+                workModal.style.display = 'flex';
+                document.body.classList.add('modal-open'); 
+            }
+
+            window.closeModal = function() {
+                workModal.style.display = 'none';
+                document.body.classList.remove('modal-open');
+            }
+
+            // Cierre al hacer clic fuera
+            workModal.addEventListener('click', (e) => {
+                if (e.target === workModal) closeModal();
+            });
+
+            // 2. MENÚ HAMBURGUESA
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navMenu.classList.toggle('is-open');
+                // Cambiar icono de hamburguesa a X si se desea
+                const icon = menuToggle.querySelector('i');
+                if(navMenu.classList.contains('is-open')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+
+            // 3. MENÚ PERFIL
+            profileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                authMenu.classList.toggle('is-open');
+            });
+
+            // Cierre global de menús al hacer clic fuera
+            document.addEventListener('click', (e) => {
+                if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                    navMenu.classList.remove('is-open');
+                    menuToggle.querySelector('i').classList.remove('fa-times');
+                    menuToggle.querySelector('i').classList.add('fa-bars');
+                }
+                if (!profileBtn.contains(e.target) && !authMenu.contains(e.target)) {
+                    authMenu.classList.remove('is-open');
+                }
+            });
+
+            // 4. MANEJO DE CAMBIO DE CATEGORÍA (SELECT)
+            window.handleCategoryChange = function(value) {
+                console.log("Categoría seleccionada:", value);
+                // Aquí puedes añadir lógica para filtrar las tarjetas del grid
+                // Ejemplo: filtrarGrid(value);
+                alert("Filtro seleccionado: " + value);
+            }
+        });
+    </script>
+</body>
+</html>

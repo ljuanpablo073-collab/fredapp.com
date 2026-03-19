@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>imh - Perfil de Empleo</title>
+    <!-- Enlaces de fuentes y Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* ========================================================================= */
+        /* 🎨 1. VARIABLES & RESET */
+        /* ========================================================================= */
+        :root {
+            --color-primary: #1f2a74;
+            /* Azul oscuro */
+            --color-secondary: #f7a723;
+            /* Naranja */
+            --color-background-light: #f5f5f5;
+            --color-text-dark: #333;
+            --color-text-light: #fff;
+            --border-radius: 12px;
+            --nav-height: 65px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            /* Previene el scroll horizontal */
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        /* ========================================================================= */
+        /* ⚓ 2. HEADER (Navegación Fija) */
+        /* ========================================================================= */
+        .header {
+            width: 100%;
+            height: var(--nav-height);
+            background-color: var(--color-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .header img {
+            width: 200px;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease-in-out;
+            margin-left: auto;
+            margin-right: 15px;
+        }
+
+        .nav-menu .nav-link {
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: 2px solid #e69c1e;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .nav-menu .nav-link:hover {
+            background-color: #fcae2d;
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 1100;
+            /* Alto Z-index para asegurar clickabilidad */
+        }
+
+        /* ========================================================================= */
+        /* 3. ZONA DE PERFIL Y GRID PRINCIPAL */
+        /* ========================================================================= */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-top: calc(var(--nav-height) + 20px);
+            /* Animación de entrada sutil */
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.6s ease-out forwards;
+            animation-delay: 0.2s;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-header {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .banner-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: filter 0.3s;
+        }
+
+        .profile-info-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            /* Estilo para desktop */
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .profile-logo-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: #ddd;
+        }
+
+        .profile-logo-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            cursor: pointer;
+        }
+
+        /* Estructura de GRID y ASIGNACIÓN DE ÁREAS */
+        .content-grid {
+            display: grid;
+            gap: 30px;
+            /* Asignación de áreas a los elementos para el orden deseado en Desktop */
+            grid-template-areas:
+                "notif content details edit";
+            /* Definición de las 4 columnas: 200px | 1fr (main) | 280px | 200px */
+            grid-template-columns: 200px 1fr 280px 200px;
+        }
+
+        /* Asignación de nombres de área a los elementos (IMPORTANTE: Esto NO usa 'order') */
+        .company-content-box {
+            grid-area: content;
+        }
+
+        .job-details-panel {
+            grid-area: details;
+        }
+
+        .notifications-sidebar {
+            grid-area: notif;
+        }
+
+        .edit-sidebar {
+            grid-area: edit;
+        }
+
+        /* Estilos de Cajas Generales y Contenido */
+        .company-content-box,
+        .job-details-panel,
+        .edit-sidebar,
+        .notifications-sidebar {
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .company-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--color-background-light);
+            padding-bottom: 15px;
+        }
+
+        .company-logo-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--color-secondary);
+        }
+
+        .company-logo-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .company-name-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .large-textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .job-details-panel input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .upload-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 25px;
+        }
+
+        .upload-button {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: var(--color-background-light);
+            color: var(--color-primary);
+            border-radius: 8px;
+            font-size: 1.3rem;
+            border: 1px solid #ddd;
+            transition: all 0.2s;
+        }
+
+        .upload-button:hover {
+            background-color: var(--color-secondary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .publish-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+
+        .publish-btn:hover {
+            background-color: #fcae2d;
+            transform: translateY(-1px);
+        }
+
+        /* ESTILOS DE NOTIFICACIONES (para desktop y dentro del menú móvil) */
+        .notifications-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .notif-card {
+            background-color: var(--color-background-light);
+            border-radius: 8px;
+            padding: 15px;
+            transition: background-color 0.3s;
+        }
+
+        .notif-card:hover {
+            background-color: #e0e0e0;
+        }
+
+        .notif-btn {
+            font-size: 0.9rem;
+            color: var(--color-text-dark);
+            font-weight: 500;
+        }
+
+        .edit-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .edit-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 10px 0;
+            font-weight: 500;
+            color: #555;
+            transition: color 0.2s;
+        }
+
+        .edit-option:hover {
+            color: var(--color-secondary);
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 10px;
+            background-color: var(--color-primary);
+            color: var(--color-text-light);
+            border: 2px solid var(--color-primary);
+        }
+
+        .action-button:hover {
+            background-color: #1a225e;
+        }
+
+        /* Contenedor de perfil móvil (para el menú) */
+        .mobile-profile-container {
+            display: none;
+        }
+
+        /* Contenedor de notificaciones dentro del menú móvil */
+        .mobile-notifications-section {
+            display: none;
+            /* Oculto por defecto, visible solo en el nav-menu en móvil */
+            width: 100%;
+            padding: 20px 0;
+            margin-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Ajuste de estilos de notificaciones dentro del menú */
+        .mobile-notifications-section .notif-title {
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .mobile-notifications-section .notif-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .mobile-notifications-section .notif-btn {
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        /* ========================================================================= */
+        /* 4. RESPONSIVIDAD (TABLET - Máx 1100px) */
+        /* ========================================================================= */
+        @media (max-width: 1100px) {
+            .content-grid {
+                grid-template-columns: 1fr 1fr;
+                /* El orden en tablet es: Contenido (full) | Detalles | Notif | Edición */
+                grid-template-areas:
+                    "content content"
+                    "details notif"
+                    "edit edit";
+            }
+        }
+
+        /* ========================================================================= */
+        /* 5. RESPONSIVIDAD (MÓVIL - Máx 768px) */
+        /* ========================================================================= */
+        @media (max-width: 768px) {
+
+            /* --- NAVEGACIÓN (Correcciones para Menú Hamburguesa) --- */
+            .menu-toggle {
+                display: block;
+                margin-left: auto;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: var(--nav-height);
+                right: 0;
+                height: calc(100vh - var(--nav-height));
+                width: 250px;
+                background-color: var(--color-primary);
+                flex-direction: column;
+                justify-content: flex-start;
+                padding: 30px;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                visibility: hidden;
+                margin: 0;
+            }
+
+            .nav-menu.is-open {
+                transform: translateX(0);
+                visibility: visible;
+                overflow-y: auto;
+                z-index: 1150;
+                /* Z-index alto para asegurar que cubra todo */
+            }
+
+            /* Hacemos los links de la navegación móvil de ancho completo */
+            .nav-menu .nav-link {
+                width: 100%;
+                text-align: center;
+            }
+
+            .mobile-profile-container {
+                display: flex !important;
+                align-items: center;
+                gap: 15px;
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                width: 100%;
+            }
+
+            .mobile-profile-pic img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid var(--color-secondary);
+            }
+
+            .mobile-profile-name {
+                color: white;
+                font-weight: 600;
+                font-size: 1rem;
+            }
+
+            /* HACER VISIBLE LA SECCIÓN DE NOTIFICACIONES EN EL MENÚ MÓVIL */
+            .mobile-notifications-section {
+                display: block;
+            }
+
+            /* --- HEADER Y LOGO (NUEVOS ESTILOS PARA MAYOR VISIBILIDAD) --- */
+            .profile-header {
+                height: 180px;
+                margin-bottom: 50px;
+            }
+
+            .profile-info-overlay {
+                left: 50%;
+                transform: translateX(-50%);
+                bottom: -40px;
+
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+
+                background-color: rgba(255, 255, 255, 0.95);
+                padding: 15px 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .profile-name {
+                font-size: 1rem;
+                color: var(--color-primary);
+                text-shadow: none;
+                margin-top: 5px;
+            }
+
+            .profile-logo-large {
+                width: 70px;
+                height: 70px;
+                border: 3px solid var(--color-secondary);
+            }
+
+            /* --- GRID DE CONTENIDO --- */
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                grid-template-areas:
+                    "content"
+                    "details"
+                    "edit";
+            }
+
+            .upload-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .job-details-panel,
+            .edit-sidebar {
+                padding: 15px;
+            }
+
+            /* OCULTAR LA BARRA DE NOTIFICACIONES DEL LAYOUT PRINCIPAL */
+            .notifications-sidebar {
+                display: none;
+                visibility: hidden;
+            }
+        }
+
+        /*iconos*/
+
+        .fas {
+            color: #4796D2;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <a href="home.html" class="logo"><img src="imagenes/SVG/fred145.svg" alt=""></a>
+
+
+        <nav class="nav-menu" id="navMenu">
+            <!-- Contenedor de perfil móvil (VISIBLE SOLO EN MÓVIL DENTRO DEL MENÚ) -->
+            <div class="mobile-profile-container" onclick="showCustomAlert('Ir a configuración de perfil')">
+                <div class="mobile-profile-pic">
+                    <img src="https://i.ibb.co/6P01v2s/noel-logo.png"
+                        onerror="this.onerror=null; this.src='https://placehold.co/150x150/f7a723/1f2a74?text=L';"
+                        alt="Perfil" id="mobileLogo">
+                </div>
+                <div class="mobile-profile-name">Noel S.A.S</div>
+            </div>
+
+            <a href="filtro.html" class="nav-link">Trabajos</a>
+            <a href="perfilsub.html" class="nav-link active">Perfil</a>
+            <a href="index22.html" class="nav-link">Portafolios</a>
+
+            <!-- SECCIÓN DE NOTIFICACIONES MOVIL -->
+            <div class="mobile-notifications-section">
+                <div class="notif-title">Notificaciones Recientes</div>
+                <div class="notif-card">
+                    <div class="notif-btn">Nueva propuesta de un diseñador</div>
+                </div>
+                <div class="notif-card">
+                    <div class="notif-btn">Tienes 3 mensajes pendientes</div>
+                </div>
+                <div class="notif-card">
+                    <div class="notif-btn">Finaliza la vacante de Marketing</div>
+                </div>
+            </div>
+            <!-- FIN SECCIÓN DE NOTIFICACIONES MOVIL -->
+
+        </nav>
+
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    </header>
+
+    <div class="main-container">
+
+        <!-- BANNER DE PERFIL Y FOTO DE EMPRESA -->
+        <div class="profile-header">
+            <input type="file" id="bannerInput" accept="image/*" style="display:none;">
+            <!-- Banner de fondo -->
+            <img src="imagenes/Sin título-1.jpg"
+                onerror="this.onerror=null; this.src='https://placehold.co/1400x400/1f2a74/ffffff?text=Banner+Empresa';"
+                alt="Banner de Fondo" class="banner-img" id="bannerImg" onclick="triggerUpload('bannerInput')">
+
+            <div class="profile-info-overlay">
+                <input type="file" id="logoInput" accept="image/*" style="display:none;">
+                <!-- Logo principal de la empresa -->
+                <div class="profile-logo-large" onclick="triggerUpload('logoInput')">
+                    <img src="imagenes/SVG/noel2.png"
+                        onerror="this.onerror=null; this.src='https://placehold.co/150x150/f7a723/1f2a74?text=LOGO';"
+                        alt="Logo Empresa" id="mainLogo">
+                </div>
+                <!-- Nombre de la empresa editable -->
+                <div class="profile-name" id="profileName" onclick="editName()">
+                    Compañía de Galletas Noel S.A.S <i class="fas fa-pen" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRID DE CONTENIDO (Orden lógico HTML para móvil: Contenido > Detalles > Edición) -->
+        <div class="content-grid">
+
+            <!-- 1. CONTENIDO PRINCIPAL (Columna 2 en Desktop) -->
+            <main class="company-content-box">
+                <div class="company-header">
+                    <div class="company-logo-small">
+                        <img src="imagenes/SVG/noel.svg"
+                            onerror="this.onerror=null; this.src='https://placehold.co/50x50/f7a723/1f2a74?text=L';"
+                            alt="Logo" id="contentLogo">
+                    </div>
+                    <div class="company-name-text" id="contentName">Compañía de Galletas Noel S.A.S</div>
+                </div>
+
+                <!-- Área de texto grande (simula +5000 palabras) -->
+                <textarea class="large-textarea"
+                    placeholder="Escribe aquí la descripción detallada de la empresa, la misión, los valores y la información de la vacante de empleo. (Capacidad para más de 5000 palabras)">
+Este es el canal principal para todas las vacantes corporativas, incluyendo las de marketing y diseño, ya que estas áreas suelen centralizarse a nivel de grupo o negocio, más que solo en la planta de producción de galletas.
+
+**Requisitos Generales:**
+- Experiencia demonstrable en el área de diseño gráfico o UX/UI.
+- Manejo avanzado de la suite Adobe (Illustrator, Photoshop, InDesign).
+- Nivel B2 de inglés (deseable).
+
+**¿Qué ofrecemos?**
+- Contrato a término indefinido.
+- Oportunidad de crecimiento y plan de carrera.
+- Salario competitivo y beneficios extralegales.
+
+¡Te invitamos a ser parte de nuestro equipo!
+                </textarea>
+            </main>
+
+            <!-- 2. DETALLES DE EMPLEO Y UPLOADS (Columna 3 en Desktop) -->
+            <div class="job-details-panel">
+                <input type="text" placeholder="Nombre de la vacante (o Título del Empleo)"
+                    value="Diseñador Gráfico Senior">
+                <input type="text" placeholder="Información del empleo (Ej. Ciudad, Tipo de Contrato)"
+                    value="Medellín, Contrato Indefinido">
+
+                <h4 style="font-size: 1rem; color: #555; margin-top: 10px; font-weight: 600;">Añadir Contenido
+                    Adicional:</h4>
+                <div class="upload-grid">
+                    <!-- Fila 1 -->
+                    <button class="upload-button" onclick="showCustomAlert('Simular: Subir Archivo ZIP/PDF')"><i
+                            class="fas fa-file-download"></i></button>
+                    <button class="upload-button"
+                        onclick="showCustomAlert('Simular: Insertar URL de Video (YouTube/Vimeo)')"><i
+                            class="fas fa-video"></i></button>
+                    <button class="upload-button" onclick="showCustomAlert('Simular: Insertar Link Externo')"><i
+                            class="fas fa-link"></i></button>
+                    <button class="upload-button" onclick="showCustomAlert('Simular: Insertar Ubicación (Mapa)')"><i
+                            class="fas fa-map-marker-alt"></i></button>
+
+
+                    <!-- Fila 2 -->
+
+                </div>
+
+                <button class="publish-btn" onclick="showCustomAlert('¡Vacante Publicada Exitosamente!')">Publicar
+                    Vacante</button>
+            </div>
+
+            <!-- 3. NOTIFICACIONES (SOLO VISIBLE EN DESKTOP) -->
+            <aside class="notifications-sidebar">
+                <div class="edit-title" style="margin-bottom: 0;">Notificaciones Recientes</div>
+                <div class="notif-card">
+                    <div class="notif-btn">Nueva propuesta de un diseñador</div>
+                </div>
+                <div class="notif-card">
+                    <div class="notif-btn">Tienes 3 mensajes pendientes</div>
+                </div>
+                <div class="notif-card">
+                    <div class="notif-btn">Finaliza la vacante de Marketing</div>
+                </div>
+            </aside>
+
+            <!-- 4. EDICIÓN (Columna 4 en Desktop) -->
+            <aside class="edit-sidebar">
+                <div class="edit-title">Configuración de la Empresa</div>
+                <div class="edit-option" onclick="triggerUpload('logoInput')"><i class="fas fa-image"></i> Cambiar Logo
+                </div>
+                <div class="edit-option" onclick="triggerUpload('bannerInput')"><i class="fas fa-panorama"></i> Cambiar
+                    Banner</div>
+                <div class="edit-option" onclick="showCustomAlert('Ir a la configuración de pagos PRO')"><i
+                        class="fas fa-cog"></i> Configuración PRO</div>
+
+                <div style="flex-grow: 1;"></div>
+                <button class="action-button" onclick="showCustomAlert('¡Guardado como borrador!')">Guardar
+                    Borrador</button>
+                <button class="action-button" onclick="showCustomAlert('¡Compartiendo esta página!')">Compartir
+                    Perfil</button>
+            </aside>
+
+        </div>
+    </div>
+
+    <!-- Placeholder para el mensaje Modal (Reemplaza a alert()) -->
+    <div id="customAlert"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 5000;">
+        <div
+            style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-width: 400px; text-align: center;">
+            <p id="alertMessage"
+                style="color: var(--color-primary); font-weight: 600; font-size: 1.1rem; margin-bottom: 20px;"></p>
+            <button onclick="document.getElementById('customAlert').style.display='none';"
+                style="background-color: var(--color-secondary); color: var(--color-primary); padding: 8px 20px; border-radius: 6px; font-weight: 700;">Aceptar</button>
+        </div>
+    </div>
+
+
+    <script>
+        // Función para mostrar un modal personalizado en lugar de alert()
+        window.showCustomAlert = function (message) {
+            document.getElementById('alertMessage').textContent = message;
+            document.getElementById('customAlert').style.display = 'flex';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            // Lógica del menú hamburguesa
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navMenu.classList.toggle('is-open');
+                // Cambia el ícono (bars <-> times) al abrir/cerrar
+                menuToggle.querySelector('i').className = navMenu.classList.contains('is-open') ? 'fas fa-times' : 'fas fa-bars';
+            });
+
+            document.addEventListener('click', (e) => {
+                // Cierra el menú si se hace clic fuera de él o del botón toggle
+                if (navMenu.classList.contains('is-open') && !menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                    navMenu.classList.remove('is-open');
+                    menuToggle.querySelector('i').className = 'fas fa-bars'; // Restaura el ícono
+                }
+            });
+
+            // --- FUNCIONES DE INTERACCIÓN DE PERFIL ---
+
+            window.editName = function () {
+                // Obtiene el texto actual limpiando el ícono de lápiz
+                const currentNameElement = document.getElementById('profileName');
+                const iconElement = currentNameElement.querySelector('.fa-pen');
+                let currentName = currentNameElement.textContent.trim();
+
+                if (iconElement) {
+                    currentName = currentName.replace(iconElement.textContent, '').trim();
+                } else {
+                    currentName = currentName.replace(/[\u270E-\u270F\uFE0E]\s*$/g, '').trim();
+                }
+
+                const newName = prompt("Edita el nombre de la empresa:", currentName);
+                if (newName && newName.trim() !== "") {
+                    const cleanNewName = newName.trim();
+                    // Actualiza el nombre en el banner principal y en el contenido, manteniendo el ícono
+                    document.getElementById('profileName').innerHTML = cleanNewName + ' <i class="fas fa-pen" style="font-size: 0.8rem; opacity: 0.7;"></i>';
+                    document.getElementById('contentName').textContent = cleanNewName;
+                    // Versión móvil
+                    document.querySelector('.mobile-profile-name').textContent = cleanNewName.substring(0, 20) + (cleanNewName.length > 20 ? '...' : '');
+                }
+            }
+
+            window.triggerUpload = function (inputId) {
+                // Simula el clic en el input de archivo oculto
+                document.getElementById(inputId).click();
+            }
+
+            // Maneja la actualización de imágenes (Logo y Banner)
+            window.updateImage = function (input, imgId) {
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const newSrc = e.target.result;
+                        // Actualiza la imagen en la sección principal
+                        document.getElementById(imgId).src = newSrc;
+
+                        // Si es el logo, actualiza todas las copias
+                        if (imgId === 'mainLogo') {
+                            document.getElementById('contentLogo').src = newSrc;
+                            document.getElementById('mobileLogo').src = newSrc;
+                        }
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            // Asigna los listeners de cambio a los inputs de archivo
+            document.getElementById('bannerInput').addEventListener('change', function () {
+                updateImage(this, 'bannerImg');
+            });
+            document.getElementById('logoInput').addEventListener('change', function () {
+                updateImage(this, 'mainLogo');
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fredapp - Zona de Subida de Proyectos (Multiformato Completo)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ========================================================================= */
+        /* 🎨 1. VARIABLES & RESET (Estilo Fredapp) */
+        /* ========================================================================= */
+        :root {
+            --color-primary: #1f2a74; 
+            --color-secondary: #f7a723; 
+            --color-background-light: #f5f5f5;
+            --color-text-dark: #333;
+            --color-text-light: #fff;
+            --color-card-border: #ccc;
+            --font-main: 'Poppins', sans-serif;
+            --border-radius: 12px;
+            --nav-height: 65px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; }
+        button { cursor: pointer; border: none; font-family: var(--font-main); transition: 0.3s; }
+        
+        /* ========================================================================= */
+        /* ⚓ 2. HEADER & NAVEGACIÓN */
+        /* ========================================================================= */
+        .header {
+            width: 100%; height: var(--nav-height);
+            background-color: var(--color-primary); 
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px;
+        }
+        .header .logo { 
+            color: var(--color-text-light); font-size: 1.5rem; font-weight: 700; 
+            display: flex; align-items: center;
+        }
+        
+        .nav-menu { 
+            display: flex; align-items: center; gap: 15px; 
+            transition: transform 0.3s ease-in-out; order: 2; margin-left: auto; 
+        }
+        
+        .nav-menu .nav-link { 
+            background-color: var(--color-secondary); color: var(--color-primary); 
+            padding: 8px 20px; border-radius: 10px; font-weight: 600; 
+            border: 2px solid #e69c1e; transition: 0.3s; white-space: nowrap; 
+        }
+        .nav-menu .nav-link:nth-child(3) { background-color: #fcae2d; color: var(--color-primary); }
+        .nav-menu .nav-link:hover { background-color: #fcae2d; transform: translateY(-2px); }
+
+        .menu-toggle { display: none; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; z-index: 1100; order: 3; }
+        
+        /* Estilo del Ícono de Perfil */
+        .profile-icon { 
+            height: 45px; width: 45px; 
+            border-radius: 50%; 
+            background-color: #fff; 
+            border: 2px solid var(--color-secondary); 
+            cursor: pointer; 
+            overflow: hidden; 
+            /* En escritorio, se usa margin-left para separarlo de los links */
+            margin-left: 10px; 
+        }
+        .profile-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+
+        /* Estilos de Móvil (Media Query) */
+        @media (max-width: 768px) {
+            .header { align-items: center; } 
+            .menu-toggle { display: block; }
+            .nav-menu { 
+                position: fixed; top: var(--nav-height); right: 0; 
+                height: calc(100vh - var(--nav-height)); width: 250px; 
+                background-color: var(--color-primary); flex-direction: column; 
+                justify-content: flex-start; padding: 20px; 
+                transform: translateX(100%); transition: transform 0.3s ease; 
+                visibility: hidden; box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+                margin-left: 0;
+                z-index: 2000; /* 💥 SOLUCIÓN: Z-index alto para asegurar que el menú esté encima */
+            }
+            .nav-menu.is-open { transform: translateX(0); visibility: visible; }
+            .nav-menu .nav-link { background-color: transparent; color: var(--color-text-light); border: none; width: 100%; text-align: center; margin-bottom: 15px; }
+            .header .logo { order: 1; }
+            .menu-toggle { order: 2; margin-left: auto; }
+            
+            /* NUEVO: Ajuste del icono de perfil cuando está en el menú móvil */
+            .nav-menu .profile-icon {
+                margin: 15px auto 5px auto; /* Centrar y añadir espacio */
+            }
+        }
+
+        /* ========================================================================= */
+        /* 🖼️ 3. CONTENIDO PRINCIPAL - ZONA DE SUBIDA (Omitido por brevedad en CSS) */
+        /* ========================================================================= */
+        /* NOTA: No es estrictamente necesario, pero si el bug persiste, añadir 'z-index: 1;' a .upload-box 
+                 o a .upload-container puede forzar el orden, pero el z-index: 2000 en el menú es la solución principal. */
+        .upload-container {
+            max-width: 1200px; 
+            margin: 40px auto; 
+            padding: 20px;
+            display: flex;
+            gap: 30px;
+        }
+        
+        #uploadSection {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #fileInput, #audioInput, #3dInput { display: none; }
+
+        .upload-box {
+            background-color: #e9e9e9; border-radius: var(--border-radius); padding: 20px; 
+            min-height: 400px; display: flex; justify-content: center; align-items: center;
+            flex-direction: column; border: 2px dashed #ccc; cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s; position: relative; 
+            overflow: hidden; text-align: center;
+        }
+        .upload-box:hover { background-color: #e0e0e0; border-color: #a0a0a0; }
+        
+        .upload-box img {
+            max-width: 100%; max-height: 100%; object-fit: contain; border-radius: var(--border-radius);
+            display: none; 
+        }
+        
+        .upload-placeholder {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            width: 100%; height: 100%; position: absolute; top: 0; left: 0; padding: 20px;
+        }
+        .upload-icon { font-size: 5rem; color: #888; margin-bottom: 10px; }
+        .upload-text { color: #555; font-weight: 600; }
+
+        .action-buttons { display: flex; gap: 20px; }
+        .action-btn { flex: 1; padding: 15px 20px; border-radius: 10px; font-weight: 700; font-size: 1.1rem; transition: background-color 0.3s; }
+        .btn-cancelar { background-color: var(--color-secondary); color: var(--color-primary); }
+        .btn-cancelar:hover { background-color: #e69c1e; }
+        .btn-retroceder { background-color: var(--color-secondary); color: var(--color-primary); }
+        .btn-retroceder:hover { background-color: #e69c1e; }
+
+        .project-details {
+            flex: 1; background-color: #fff; padding: 20px; border-radius: var(--border-radius);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; gap: 20px;
+        }
+        .editable-input { width: 100%; padding: 12px 15px; border: 1px solid var(--color-card-border); border-radius: 8px; font-family: var(--font-main); font-size: 1rem; outline: none; transition: border-color 0.3s; }
+        .editable-input:focus { border-color: var(--color-secondary); }
+        .format-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .format-btn { background-color: #f0f0f0; color: #555; aspect-ratio: 1 / 1; border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 1.5rem; transition: background-color 0.3s, transform 0.2s; }
+        .format-btn i { margin-bottom: 4px; }
+        .format-btn:hover { background-color: #ddd; transform: translateY(-2px); box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1); }
+        .format-btn-text { font-size: 0.7rem; font-weight: 500; }
+        
+        .btn-publicar { padding: 15px; background-color: var(--color-secondary); color: var(--color-primary); font-weight: 700; font-size: 1.2rem; border-radius: 10px; margin-top: auto; }
+        .btn-publicar:hover { background-color: #e69c1e; }
+        
+        @media (max-width: 900px) {
+            .upload-container { flex-direction: column; margin: 20px auto; }
+            #uploadSection, .project-details { flex: none; width: 100%; }
+            .upload-box { min-height: 250px; }
+        }
+        @media (max-width: 480px) {
+            .action-buttons { flex-direction: column; gap: 10px; }
+            .format-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        
+        #preview-interface { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; color: white; font-size: 1.5rem; padding: 20px; }
+        .preview-content { background: white; color: var(--color-text-dark); padding: 30px; border-radius: 15px; width: 90%; max-width: 600px; text-align: center; box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+        .preview-content h3 { color: var(--color-primary); margin-bottom: 10px; }
+        .preview-content p { margin-bottom: 15px; font-size: 1rem; }
+        .btn-close-preview { background-color: var(--color-secondary); color: var(--color-primary); padding: 10px 20px; font-weight: 700; border-radius: 8px; margin-top: 20px; }
+        .btn-close-preview:hover { background-color: #e69c1e; }
+
+
+/* Iconos color*/
+
+.fa-solid, .fas ,.fab {
+    color: #4796D2;
+}
+
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="home.html" class="logo"><img src="imagenes/logo/1x/logo_1.png" alt=""></a>
+        
+        <nav class="nav-menu" id="navMenu">
+            <a href="index22.html" class="nav-link">Trabajos</a>
+            <a href="perfilsub.html" class="nav-link">Perfil</a>
+            <a href="filtro.html" class="nav-link">Portafolios</a>
+            
+            <div class="profile-icon" onclick="alert('Ir a Perfil')">
+                <img src="https://i.pravatar.cc/150?img=12" alt="Perfil">
+            </div>
+        </nav>
+
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        
+    </header>
+
+    <div class="upload-container">
+        
+        <div id="uploadSection">
+            
+            <input type="file" id="fileInput" 
+                   accept="image/jpeg, image/png, image/gif, application/pdf" multiple 
+                   onchange="handleFileSelection(this.files, 'main')">
+            <input type="file" id="audioInput" 
+                   accept="audio/mp3, audio/wav, audio/ogg"
+                   onchange="handleFileSelection(this.files, 'audio')">
+            <input type="file" id="3dInput" 
+                   accept=".obj, .fbx"
+                   onchange="handleFileSelection(this.files, '3d')">
+
+            <div class="upload-box" id="uploadBox_main" onclick="simulateFileUpload('main')">
+                
+                <img id="uploadImagePreview_main" src="#" alt="Previsualización de Archivo">
+
+                <div class="upload-placeholder" id="uploadPlaceholder_main">
+                    <i class="fas fa-plus upload-icon"></i>
+                    <span class="upload-text">Arrastra o haz clic para subir imagen o PDF</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn btn-cancelar" onclick="clearUpload('main')">Borrar Contenido</button>
+                <button class="action-btn btn-retroceder" onclick="alert('Acción: Deshace el último cambio.')">Retroceder</button>
+            </div>
+            
+        </div>
+        
+        <div class="project-details">
+            <input type="text" id="nombreProyecto" class="editable-input" placeholder="Nombre del proyecto">
+            <input type="text" id="categoriaProyecto" class="editable-input" placeholder="Categorías del proyecto">
+            <input type="text" id="herramientasUsadas" class="editable-input" placeholder="Herramientas usadas">
+
+            <div class="format-grid">
+                <button class="format-btn" onclick="simulateFileUpload('image')">
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                    <span class="format-btn-text">Imágenes</span>
+                </button>
+                <button class="format-btn" onclick="handleFormatAction('video')">
+                    <i class="fab fa-youtube"></i>
+                    <span class="format-btn-text">Video</span>
+                </button>
+                <button class="format-btn" onclick="handleFormatAction('link')">
+                    <i class="fas fa-link"></i>
+                    <span class="format-btn-text">Enlace</span>
+                </button>
+                <button class="format-btn" onclick="handleFormatAction('text')">
+                    <i class="fas fa-font"></i>
+                    <span class="format-btn-text">Texto</span>
+                </button>
+                <button class="format-btn" onclick="simulateFileUpload('audio')">
+                    <i class="fas fa-music"></i>
+                    <span class="format-btn-text">Música</span>
+                </button>
+                <button class="format-btn" onclick="addUploadBox()">
+                    <i class="fas fa-plus"></i>
+                    <span class="format-btn-text">Montaje</span>
+                </button>
+                <button class="format-btn" onclick="handleFormatAction('map')">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span class="format-btn-text">Mapa</span>
+                </button>
+                <button class="format-btn" onclick="simulateFileUpload('3d')">
+                    <i class="fas fa-cube"></i>
+                    <span class="format-btn-text">3D (OBJ/FBX)</span>
+                    
+                </button>
+            </div>
+            
+            <button class="btn-publicar" onclick="location.href='perfilsub.html';">Publicar</button>
+        </div>
+    </div>
+    
+    <div id="preview-interface">
+        <div class="preview-content">
+            <h3>✅ Proyecto Enviado a Previsualización</h3>
+            <p><strong>Nombre:</strong> <span id="prevNombre"></span></p>
+            <p><strong>Categoría:</strong> <span id="prevCategoria"></span></p>
+            <p><strong>Estado:</strong> Listo para revisar cómo se verá en tu portafolio.</p>
+            <button class="btn-close-preview" onclick="hidePreview()">Cerrar Previsualización</button>
+        </div>
+    </div>
+
+    <script>
+        // Contador para crear IDs únicos para nuevas mesas de trabajo
+        let boxCounter = 1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+            const fileInput = document.getElementById('fileInput'); 
+            const audioInput = document.getElementById('audioInput'); 
+            const threeDInput = document.getElementById('3dInput'); 
+
+            // Manejo del menú
+            menuToggle.addEventListener('click', () => { navMenu.classList.toggle('is-open'); });
+            document.querySelectorAll('#navMenu a').forEach(item => {
+                item.addEventListener('click', () => { navMenu.classList.remove('is-open'); });
+            });
+
+            // Función principal para activar el selector de archivos
+            window.simulateFileUpload = function(type) {
+                switch(type) {
+                    case 'image':
+                    case 'main':
+                        fileInput.click();
+                        break;
+                    case 'audio':
+                    case '3d':
+                        // Lógica para inputs específicos
+                        const inputElement = document.getElementById(`${type}Input`);
+                        if (inputElement) inputElement.click();
+                        break;
+                    default:
+                        // Lógica para cajas dinámicas
+                        const dynamicInput = document.getElementById(`fileInput_${type}`);
+                        if (dynamicInput) dynamicInput.click();
+                        break;
+                }
+            }
+
+            // FUNCIÓN CLAVE: Maneja la selección de archivos y muestra la previsualización/estado
+            window.handleFileSelection = function(files, boxIdSuffix) {
+                if (files.length === 0) return;
+                
+                const file = files[0];
+                const placeholder = document.getElementById(`uploadPlaceholder_${boxIdSuffix}`);
+                const previewImage = document.getElementById(`uploadImagePreview_${boxIdSuffix}`);
+                
+                if (!placeholder || !previewImage) {
+                    alert(`Archivo ${file.name} seleccionado. (No se pudo cargar la previsualización en la interfaz)`);
+                    return;
+                }
+
+                // 1. Manejo de IMÁGENES (JPG, PNG, GIF)
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = 'block';
+                        placeholder.style.display = 'none';
+                    };
+                    
+                    reader.readAsDataURL(file);
+                    alert(`Imagen subida: ${file.name}.`);
+                    
+                // 2. Manejo de PDF (Solo en la caja principal o dinámica)
+                } else if (file.type === 'application/pdf') {
+                    previewImage.style.display = 'none';
+                    placeholder.style.display = 'flex';
+                    placeholder.querySelector('.upload-text').textContent = `PDF cargado: ${file.name}.`;
+                    alert(`PDF seleccionado: ${file.name}.`);
+                    
+                // 3. Manejo de AUDIO (MP3, WAV, OGG)
+                } else if (file.type.startsWith('audio/') && boxIdSuffix === 'audio') {
+                    previewImage.style.display = 'none';
+                    placeholder.style.display = 'flex';
+                    placeholder.querySelector('.upload-text').textContent = `Música cargada: ${file.name}.`;
+                    alert(`Música subida: ${file.name}.`);
+                    
+                // 4. Manejo de 3D (OBJ, FBX)
+                } else if ( (file.name.toLowerCase().endsWith('.obj') || file.name.toLowerCase().endsWith('.fbx')) && boxIdSuffix === '3d') {
+                    previewImage.style.display = 'none';
+                    placeholder.style.display = 'flex';
+                    placeholder.querySelector('.upload-text').textContent = `Modelo 3D cargado: ${file.name}.`;
+                    alert(`Modelo 3D subido: ${file.name}.`);
+                    
+                } else {
+                    alert(`Tipo de archivo no soportado o error de lógica: ${file.name}`);
+                    previewImage.style.display = 'none';
+                    placeholder.style.display = 'flex';
+                }
+            }
+            
+            // Función para limpiar la caja de subida
+            window.clearUpload = function(idSuffix) {
+                const placeholder = document.getElementById(`uploadPlaceholder_${idSuffix}`);
+                const previewImage = document.getElementById(`uploadImagePreview_${idSuffix}`);
+                const boxText = (idSuffix === 'audio') ? 'música (MP3/WAV)' : (idSuffix === '3d') ? 'modelo 3D' : 'imagen o PDF';
+                
+                if (previewImage) {
+                    previewImage.src = '#';
+                    previewImage.style.display = 'none';
+                }
+                if (placeholder) {
+                    placeholder.style.display = 'flex';
+                    placeholder.querySelector('.upload-text').textContent = `Arrastra o haz clic para subir ${boxText}`;
+                }
+                alert(`Contenido de la caja ${idSuffix} borrado.`);
+            }
+
+            // Maneja los botones que requieren entrada de texto (prompt)
+            window.handleFormatAction = function(type) {
+                let input;
+                switch(type) {
+                    case 'video':
+                        input = prompt("Pega aquí el enlace (URL) de YouTube o Vimeo:");
+                        if (input) alert(`Video de ${input} listo para insertar.`);
+                        break;
+                    case 'link':
+                        input = prompt("Pega aquí el enlace (URL) que deseas añadir:");
+                        if (input) alert(`Enlace añadido: ${input}.`);
+                        break;
+                    case 'text':
+                        input = prompt("Introduce el bloque de texto o descripción:");
+                        if (input) alert(`Bloque de texto añadido: "${input.substring(0, 30)}..."`);
+                        break;
+                    case 'map':
+                        input = prompt("Pega aquí el enlace o dirección de Google Maps:");
+                        if (input) alert(`Ubicación de Google Maps añadida: ${input}.`);
+                        break;
+                }
+            }
+            
+            // FUNCIÓN PARA AÑADIR NUEVAS MESAS DE TRABAJO (Montaje/Canvas)
+            window.addUploadBox = function() {
+                boxCounter++;
+                const newId = `dynamic_${boxCounter}`;
+                
+                const newHtml = `
+                    <div class="upload-box" id="uploadBox_${newId}" onclick="simulateFileUpload('${newId}')">
+                        <input type="file" id="fileInput_${newId}" accept="image/jpeg, image/png, image/gif, application/pdf" multiple onchange="handleFileSelection(this.files, '${newId}')" style="display:none;">
+                        <img id="uploadImagePreview_${newId}" src="#" alt="Previsualización de Archivo">
+                        <div class="upload-placeholder" id="uploadPlaceholder_${newId}">
+                            <i class="fas fa-layer-group upload-icon" style="font-size: 3rem;"></i>
+                            <span class="upload-text">Mesa de Trabajo #${boxCounter}: Clic para subir imagen o PDF</span>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn btn-cancelar" onclick="removeUploadBox('${newId}')" style="background-color: #dc3545; color: white;">Eliminar Mesa</button>
+                        <button class="action-btn btn-retroceder" onclick="clearUpload('${newId}')">Limpiar Contenido</button>
+                    </div>
+                `;
+                
+                const actionButtons = document.querySelector('#uploadSection > .action-buttons:last-child');
+                actionButtons.insertAdjacentHTML('beforebegin', newHtml);
+                
+                alert(`Nueva Mesa de Trabajo #${boxCounter} añadida. Ya puedes subir imágenes o PDF.`);
+            }
+            
+            // Función para eliminar una mesa de trabajo dinámica
+            window.removeUploadBox = function(id) {
+                if(confirm(`¿Estás seguro de que quieres eliminar la Mesa de Trabajo ${id}?`)) {
+                    const box = document.getElementById(`uploadBox_${id}`);
+                    const buttons = box.nextElementSibling; 
+                    
+                    if (box) box.remove();
+                    if (buttons && buttons.classList.contains('action-buttons')) buttons.remove();
+                    
+                    alert(`Mesa de trabajo ${id} eliminada.`);
+                }
+            }
+
+            // Funciones de Previsualización (Modal)
+            window.showPreview = function() {
+                const nombre = document.getElementById('nombreProyecto').value || 'Sin Nombre';
+                const categoria = document.getElementById('categoriaProyecto').value || 'Sin Categoría';
+                
+                document.getElementById('prevNombre').textContent = nombre;
+                document.getElementById('prevCategoria').textContent = categoria;
+                
+                document.getElementById('preview-interface').style.display = 'flex';
+                document.body.style.overflow = 'hidden'; 
+            }
+            
+            window.hidePreview = function() {
+                document.getElementById('preview-interface').style.display = 'none';
+                document.body.style.overflow = 'auto'; 
+            }
+        });
+    </script>
+</body>
+</html>

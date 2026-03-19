@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fredapp - Perfil de Usuario</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+    </style>
+
+    <style>
+        /* ========================================================================= */
+        /* 🎨 1. VARIABLES & RESET */
+        /* ========================================================================= */
+        :root {
+            --color-primary: #2A2F6F;
+            /* Azul oscuro */
+            --color-secondary: #F6A320;
+            /* Naranja */
+            --color-background-light: #f5f5f5;
+            --color-text-dark: #333;
+            --color-text-light: #fff;
+            --border-radius: 12px;
+            --nav-height: 65px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main, 'Poppins', sans-serif);
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        /* ========================================================================= */
+        /* ⚓ 2. HEADER (Navegación) */
+        /* ========================================================================= */
+        .header {
+            width: 100%;
+            height: var(--nav-height);
+            background-color: var(--color-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .header .logo {
+            color: var(--color-text-light);
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease-in-out;
+            margin-left: auto;
+            margin-right: 15px;
+        }
+
+        .nav-menu .nav-link {
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: 2px solid #F6A320;
+            transition: 0.3s;
+            white-space: nowrap;
+
+        }
+
+        .nav-menu .nav-link:nth-child(2) {
+            /* Perfil Activo en escritorio */
+            background-color: #fcae2d;
+            color: var(--color-primary);
+        }
+
+        .nav-menu .nav-link:hover {
+            background-color: #fcae2d;
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 1100;
+        }
+
+        /* ========================================================================= */
+        /* 3. ZONA DE PERFIL Y GRID PRINCIPAL */
+        /* ========================================================================= */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-top: calc(var(--nav-height) + 20px);
+        }
+
+        .profile-header {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .banner-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: filter 0.3s;
+        }
+
+        .banner-img:hover {
+            filter: brightness(0.8);
+        }
+
+        .profile-info-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: #ddd;
+        }
+
+        .profile-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar-large:hover {
+            opacity: 0.9;
+        }
+
+        .profile-name {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            cursor: pointer;
+        }
+
+        .profile-name:hover {
+            text-decoration: underline;
+        }
+
+        #bannerInput,
+        #avatarInput {
+            display: none;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 30px;
+        }
+
+        /* --- SECCIÓN IZQUIERDA: NOTIFICACIONES --- */
+        .notifications-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .notif-card {
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid var(--color-secondary);
+        }
+
+        .notif-btn {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: rgba(247, 167, 35, 0.1);
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .notif-card:hover .notif-btn {
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+        }
+
+        /* --- SECCIÓN CENTRAL: TRABAJOS --- */
+        .works-feed {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            align-content: start;
+        }
+
+        .work-card {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .work-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .work-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(31, 42, 116, 0.85);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .work-card:hover .work-overlay {
+            opacity: 1;
+        }
+
+        .work-card:hover img {
+            transform: scale(1.05);
+        }
+
+        /* CUADRO GRIS PARA SUBIR TRABAJO */
+        .add-work-card {
+            background-color: #e0e0e0;
+            border: 3px dashed #999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .add-work-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: #555;
+        }
+
+        .add-work-content i {
+            font-size: 3rem;
+            color: #777;
+            transition: 0.3s;
+        }
+
+        .add-work-content span {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .add-work-card:hover {
+            background-color: #d6d6d6;
+            transform: translateY(-3px);
+        }
+
+        .add-work-card:hover i {
+            color: var(--color-secondary);
+        }
+
+        /* --- SECCIÓN DERECHA: EDICIÓN --- */
+        .edit-sidebar {
+            background-color: #fcfcfc;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .edit-title {
+            color: var(--color-secondary);
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .edit-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--color-text-dark);
+            font-weight: 600;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .edit-option:hover {
+            background-color: #eee;
+        }
+
+        .edit-option i {
+            font-size: 1.2rem;
+        }
+
+        .publish-btn {
+            margin-top: 20px;
+            background-color: var(--color-secondary);
+            color: white;
+            font-weight: 700;
+            padding: 12px;
+            border-radius: 20px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .publish-btn:hover {
+            background-color: #e69c1e;
+            transform: scale(1.02);
+        }
+
+
+        /* ========================================================================= */
+        /* 4. ESTILOS DEL MODAL DE PREVISUALIZACIÓN — REDISEÑADO */
+        /* ========================================================================= */
+        #workPreviewModal {
+            display: none;
+            position: fixed;
+            z-index: 4000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 14, 40, 0.88);
+            backdrop-filter: blur(6px);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ── Tarjeta principal del modal ── */
+        .modal-content {
+            background: #fff;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 1100px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+            animation: modalSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.88) translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* ── Cabecera del modal ── */
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 28px;
+            background: var(--color-primary);
+            color: #fff;
+        }
+
+        .modal-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .modal-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #modalTitle {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            outline: none;
+        }
+
+        .btn-edit-inline {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 9px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-edit-inline:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-close-modal {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-close-modal:hover {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        /* ── Cuerpo en dos columnas ── */
+        .modal-body {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            overflow: hidden;
+            height: 100%;
+            max-height: calc(90vh - 72px);
+        }
+
+        /* ── Columna IZQUIERDA: galería de medios ── */
+        .modal-media {
+            background: #111827;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px;
+            gap: 16px;
+        }
+
+        .media-section-label {
+            color: #9ca3af;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        /* Imagen principal */
+        .modal-main-img {
+            width: 100%;
+            border-radius: 14px;
+            object-fit: cover;
+            max-height: 320px;
+            display: block;
+        }
+
+        /* Miniaturas de galería */
+        .modal-gallery-strip {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .gallery-thumb {
+            width: 90px;
+            height: 70px;
+            border-radius: 10px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .gallery-thumb:hover,
+        .gallery-thumb.active {
+            border-color: var(--color-secondary);
+            transform: scale(1.06);
+        }
+
+        /* Área de video */
+        .modal-video-wrap {
+            border-radius: 14px;
+            overflow: hidden;
+            background: #000;
+            aspect-ratio: 16/9;
+        }
+
+        .modal-video-wrap video,
+        .modal-video-wrap iframe {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Botones de subida en la galería */
+        .media-upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(255, 255, 255, 0.07);
+            color: #d1d5db;
+            border: 1.5px dashed rgba(255, 255, 255, 0.25);
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .media-upload-btn:hover {
+            background: rgba(246, 163, 32, 0.15);
+            border-color: var(--color-secondary);
+            color: var(--color-secondary);
+        }
+
+        /* ── Columna DERECHA: panel de texto ── */
+        .modal-info {
+            background: #f9fafb;
+            border-left: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 24px;
+            gap: 20px;
+        }
+
+        .info-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-field-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .info-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #6b7280;
+        }
+
+        .btn-pencil {
+            background: none;
+            border: 1.5px solid #d1d5db;
+            border-radius: 7px;
+            padding: 4px 8px;
+            color: #6b7280;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-pencil:hover {
+            background: var(--color-secondary);
+            border-color: var(--color-secondary);
+            color: #fff;
+        }
+
+        .info-value {
+            font-size: 0.95rem;
+            color: #1f2937;
+            line-height: 1.6;
+            background: #fff;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 10px 14px;
+            min-height: 48px;
+            transition: border-color 0.2s;
+        }
+
+        .info-value[contenteditable="true"] {
+            border-color: var(--color-secondary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(246, 163, 32, 0.15);
+        }
+
+        .info-value.multiline {
+            min-height: 90px;
+        }
+
+        /* Tags */
+        .tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .tag {
+            background: rgba(42, 47, 111, 0.08);
+            color: var(--color-primary);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        /* Botones del panel */
+        .modal-actions {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-primary-action {
+            background: var(--color-secondary);
+            color: var(--color-primary);
+            font-weight: 700;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: 0.25s;
+        }
+
+        .btn-primary-action:hover {
+            background: #e69c1e;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary-action {
+            background: transparent;
+            color: #6b7280;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1.5px solid #d1d5db;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.25s;
+        }
+
+        .btn-secondary-action:hover {
+            border-color: #9ca3af;
+            color: #374151;
+        }
+
+        /* Responsive modal */
+        @media (max-width: 750px) {
+            .modal-body {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-info {
+                border-left: none;
+                border-top: 1px solid #e5e7eb;
+                max-height: 45vh;
+            }
+
+            .modal-media {
+                max-height: 40vh;
+            }
+        }
+
+        /* ========================================================================= */
+        /* 5. RESPONSIVIDAD (MÓVIL) */
+        /* ========================================================================= */
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                align-items: center;
+            }
+
+            .menu-toggle {
+                display: block;
+                margin-left: auto;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: var(--nav-height);
+                right: 0;
+                height: calc(100vh - var(--nav-height));
+                width: 250px;
+                background-color: var(--color-primary);
+                flex-direction: column;
+                justify-content: flex-start;
+                padding: 30px;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                visibility: hidden;
+                box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+                margin: 0;
+                z-index: 2000;
+            }
+
+            .nav-menu.is-open {
+                transform: translateX(0);
+                visibility: visible;
+            }
+
+            /* BOTONES NARANJAS EN MÓVIL (Menú Hamburguesa) */
+            .nav-menu .nav-link {
+                background-color: var(--color-secondary);
+                color: var(--color-primary);
+                border: 2px solid #e69c1e;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 15px;
+                border-radius: 10px;
+                padding: 10px;
+            }
+
+            .nav-menu .nav-link:hover {
+                background-color: #fcae2d;
+                transform: translateY(-2px);
+            }
+
+            .mobile-profile-container {
+                display: flex !important;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                width: 100%;
+            }
+
+            .mobile-profile-pic {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                border: 2px solid var(--color-secondary);
+                overflow: hidden;
+            }
+
+            .mobile-profile-pic img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .mobile-profile-name {
+                color: white;
+                font-weight: 600;
+            }
+
+            .profile-header {
+                height: 200px;
+            }
+
+            .profile-info-overlay {
+                flex-direction: column;
+                align-items: flex-start;
+                left: 20px;
+                bottom: 10px;
+                gap: 10px;
+            }
+
+            .profile-name {
+                font-size: 1.4rem;
+            }
+
+            .profile-avatar-large {
+                width: 80px;
+                height: 80px;
+            }
+
+            .works-feed {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mobile-profile-container {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <a href="home.html" class="logo"><img src="imagenes/logo/1x/logo_1.png" alt=""> </a>
+
+        <nav class="nav-menu" id="navMenu">
+            <div class="mobile-profile-container" onclick="alert('Ir a configuración de perfil')">
+                <div class="mobile-profile-pic">
+                    <img src="https://i.pravatar.cc/150?img=8" alt="Perfil" id="mobileAvatar">
+                </div>
+                <div class="mobile-profile-name">Juan Pablo</div>
+            </div>
+
+            <a href="index22.html" class="nav-link">Trabajos</a>
+            <a href="perfilsub.html" class="nav-link">Perfil</a>
+            <a href="filtro.html" class="nav-link">Portafolios</a>
+        </nav>
+
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    </header>
+
+    <div class="main-container">
+
+        <div class="profile-header">
+            <input type="file" id="bannerInput" accept="image/*" onchange="updateImage(this, 'bannerImg')">
+            <img src="https://picsum.photos/1400/400?random=1" alt="Banner de Fondo" class="banner-img" id="bannerImg"
+                onclick="triggerUpload('bannerInput')">
+
+            <div class="profile-info-overlay">
+                <input type="file" id="avatarInput" accept="image/*" onchange="updateImage(this, 'mainAvatar')">
+                <div class="profile-avatar-large" onclick="triggerUpload('avatarInput')">
+                    <img src="https://i.pravatar.cc/150?img=8" alt="Foto Perfil" id="mainAvatar">
+                </div>
+                <div class="profile-name" id="profileName" onclick="editName()">
+                    Juan Pablo Pulgarin Mendoza <i class="fas fa-pen" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+
+            <aside class="notifications-sidebar">
+                <div class="notif-card">
+                    <div class="notif-btn">Hay nuevos talentos en el diseño</div>
+                </div>
+                <div class="notif-card">
+                    <div class="notif-btn">Nuevas empresas te buscan</div>
+                </div>
+                <div class="notif-card">
+                    <div class="notif-btn">SENA Proyectos</div>
+                </div>
+            </aside>
+
+            <main class="works-feed">
+
+                <div class="work-card add-work-card" onclick="location.href='subidasi.html';">
+                    <div class="add-work-content">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Subir nuevo trabajo</span>
+                    </div>
+                </div>
+
+                <div class="work-card"
+                    onclick="showWorkDetails('asdasd', 'Un proyecto de publicidad digital muy efectivo para una marca de bebidas asddasasdasdasda.')">
+                    <img src="https://picsum.photos/500/400?random=10" alt="Trabajo 1">
+                    <div class="work-overlay">Fografia</div>
+                </div>
+                <div class="work-card"
+                    onclick="showWorkDetails('App UI Design', 'Diseño completo de la interfaz de usuario para una aplicación de fitness.')">
+                    <img src="imagenes/trabajos ejemplo/app diseñe.png" alt="Trabajo 2">
+                    <div class="work-overlay">App UI Design</div>
+                </div>
+                <div class="work-card"
+                    onclick="showWorkDetails('Magazine Layout', 'Creación de un diseño moderno y minimalista para una revista de arte.')">
+                    <img src="https://picsum.photos/500/400?random=12" alt="Trabajo 3">
+                    <div class="work-overlay">Magazine Layout</div>
+                </div>
+                <div class="work-card"
+                    onclick="showWorkDetails('Food Photography', 'Serie de fotografías gastronómicas profesionales para un restaurante de alta cocina.')">
+                    <img src="https://picsum.photos/500/400?random=13" alt="Trabajo 4">
+                    <div class="work-overlay">Food Photography</div>
+                </div>
+                <div class="work-card"
+                    onclick="showWorkDetails('Web Development', 'Desarrollo front-end de un sitio web corporativo utilizando React y Sass.')">
+                    <img src="https://picsum.photos/500/400?random=15" alt="Trabajo 6">
+                    <div class="work-overlay">Web Development</div>
+                </div>
+            </main>
+
+            <aside class="edit-sidebar">
+                <div class="edit-title">Perfil de usuario</div>
+                <div class="edit-option" onclick="triggerUpload('avatarInput')"><i class="fas fa-pencil-alt"></i> Editar
+                    Perfil (Foto/Banner)</div>
+                <div class="edit-option" onclick="alert('Ir a configuración avanzada PRO')"><i
+                        class="fas fa-pencil-alt"></i> Personalizar pro</div>
+                <div class="edit-option" onclick="location.href='hoja_de_vida.html'"><i class="fas fa-file-alt"></i> Editar Hoja de vida</div>
+                <div class="edit-option" onclick="showResumePreview()"><i class="fas fa-eye"></i> Ver Hoja de vida</div>
+                <div style="flex-grow: 1;"></div>
+                <button class="publish-btn" onclick="alert('¡Disponibilidad Activada!')">Activar disponibilidad</button>
+            </aside>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         MODAL DE PREVISUALIZACIÓN DE TRABAJO — REDISEÑADO
+    ═══════════════════════════════════════════════════════════ -->
+    <div id="workPreviewModal" style="display:none;">
+        <div class="modal-content">
+
+            <!-- CABECERA -->
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <div class="modal-title-wrap">
+                        <span id="modalTitle">Nombre del Proyecto</span>
+                        <button class="btn-edit-inline" onclick="toggleEdit('modalTitle')" title="Editar título">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn-close-modal" onclick="hideWorkDetails()" title="Cerrar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- CUERPO EN DOS COLUMNAS -->
+            <div class="modal-body">
+
+                <!-- ── COLUMNA IZQUIERDA: MEDIOS ── -->
+                <div class="modal-media">
+
+                    <!-- Imagen principal -->
+                    <div>
+                        <p class="media-section-label"><i class="fas fa-image"></i> &nbsp;Imagen principal</p>
+                        <img id="modalMainImage" src="" alt="Imagen principal" class="modal-main-img">
+                    </div>
+
+                    <!-- Galería de miniaturas -->
+                    <div>
+                        <p class="media-section-label"><i class="fas fa-images"></i> &nbsp;Galería</p>
+                        <div class="modal-gallery-strip" id="modalGallery">
+                            <!-- Las miniaturas se insertan dinámicamente -->
+                        </div>
+                        <label class="media-upload-btn" style="margin-top:10px; display:inline-flex;">
+                            <i class="fas fa-plus"></i> Añadir imagen
+                            <input type="file" accept="image/*" multiple hidden onchange="addGalleryImages(this)">
+                        </label>
+                    </div>
+
+                    <!-- Área de video -->
+                    <div>
+                        <p class="media-section-label"><i class="fas fa-video"></i> &nbsp;Video del proyecto</p>
+                        <div class="modal-video-wrap" id="modalVideoWrap" style="display:none;">
+                            <video id="modalVideo" controls></video>
+                        </div>
+                        <label class="media-upload-btn" id="addVideoBtn">
+                            <i class="fas fa-film"></i> Añadir video
+                            <input type="file" accept="video/*" hidden onchange="addVideo(this)">
+                        </label>
+                    </div>
+
+                </div>
+
+                <!-- ── COLUMNA DERECHA: TEXTOS EDITABLES ── -->
+                <div class="modal-info">
+
+                    <!-- Descripción -->
+                    <div class="info-field">
+                        <div class="info-field-header">
+                            <span class="info-label">Descripción</span>
+                            <button class="btn-pencil" onclick="toggleEdit('modalDescription')">
+                                <i class="fas fa-pencil-alt"></i> Editar
+                            </button>
+                        </div>
+                        <div class="info-value multiline" id="modalDescription" contenteditable="false">Sin descripción
+                        </div>
+                    </div>
+
+                    <!-- Cliente -->
+                    <div class="info-field">
+                        <div class="info-field-header">
+                            <span class="info-label">Cliente</span>
+                            <button class="btn-pencil" onclick="toggleEdit('modalClient')">
+                                <i class="fas fa-pencil-alt"></i> Editar
+                            </button>
+                        </div>
+                        <div class="info-value" id="modalClient" contenteditable="false">—</div>
+                    </div>
+
+                    <!-- Año -->
+                    <div class="info-field">
+                        <div class="info-field-header">
+                            <span class="info-label">Año</span>
+                            <button class="btn-pencil" onclick="toggleEdit('modalYear')">
+                                <i class="fas fa-pencil-alt"></i> Editar
+                            </button>
+                        </div>
+                        <div class="info-value" id="modalYear" contenteditable="false">2024</div>
+                    </div>
+
+                    <!-- Herramientas / Notas adicionales -->
+                    <div class="info-field">
+                        <div class="info-field-header">
+                            <span class="info-label">Herramientas / Notas</span>
+                            <button class="btn-pencil" onclick="toggleEdit('modalTools')">
+                                <i class="fas fa-pencil-alt"></i> Editar
+                            </button>
+                        </div>
+                        <div class="info-value multiline" id="modalTools" contenteditable="false">Figma, Photoshop,
+                            Illustrator</div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="info-field">
+                        <span class="info-label">Categorías</span>
+                        <div class="tags-row" id="modalTags">
+                            <span class="tag">Diseño</span>
+                            <span class="tag">UX/UI</span>
+                            <span class="tag">Branding</span>
+                        </div>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="modal-actions">
+                        <button class="btn-primary-action" onclick="alert('¡Cambios guardados!')">Guardar
+                            cambios</button>
+                        <button class="btn-secondary-action" onclick="hideWorkDetails()">Cerrar
+                            previsualización</button>
+                    </div>
+
+                </div>
+            </div><!-- fin modal-body -->
+        </div><!-- fin modal-content -->
+    </div>
+
+    <!-- MODAL DE PREVISUALIZACIÓN DE HOJA DE VIDA -->
+    <div id="resumePreviewModal" style="display:none; position: fixed; z-index: 4000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(10, 14, 40, 0.88); backdrop-filter: blur(6px); justify-content: center; align-items: center; padding: 20px;">
+        <div class="modal-content" style="max-width: 800px; display: flex; flex-direction: column; background: #fff; border-radius: 20px; overflow: hidden; height: 90vh;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; padding: 18px 28px; background: var(--color-primary); color: #fff;">
+                <span id="resumeModalTitle" style="font-size: 1.5rem; font-weight: 700;">Tu Hoja de Vida Final</span>
+                <button class="btn-close-modal" onclick="hideResumePreview()" title="Cerrar" style="background: rgba(255, 255, 255, 0.12); color: #fff; border: none; border-radius: 50%; width: 38px; height: 38px; font-size: 1.1rem; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 0; overflow-y: auto; display:block; flex: 1; background: #f5f5f5;">
+                <div style="width: 100%; padding: 40px 20px; display:flex; justify-content: center;">
+                    <div style="width: 100%; max-width: 650px; background: white; box-shadow: 0 10px 40px rgba(0,0,0,0.15); padding: 50px; min-height: 800px;">
+                        <div style="display: flex; gap: 30px; margin-bottom: 30px; align-items:center;">
+                            <img src="https://i.pravatar.cc/150?img=8" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border: 4px solid var(--color-secondary);">
+                            <div>
+                                <h2 style="color:var(--color-primary); margin-bottom:8px; font-size: 2.2rem; line-height: 1.1;">Juan Pablo Pulgarin</h2>
+                                <h4 style="color:var(--color-secondary); font-size: 1.2rem;">Diseñador UX/UI</h4>
+                                <p style="font-size:0.95rem; color:#555; margin-top:15px; line-height: 1.6;">Soy un diseñador apasionado por crear experiencias digitales intuitivas y atractivas. Me especializo en interfaces limpias y sistemas de diseño escalables.</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 40px;">
+                            <div style="width: 60%;">
+                                <h3 style="border-bottom: 2px solid var(--color-secondary); padding-bottom: 5px; margin-bottom: 15px; color:var(--color-primary); text-transform: uppercase; font-size: 1.1rem;">Experiencia Laboral</h3>
+                                <div style="margin-bottom: 25px;">
+                                    <strong style="color:var(--color-primary); font-size: 1.1rem;">Diseñador Gráfico Senior</strong><br>
+                                    <span style="font-size:0.85rem; color:#777; font-weight:600;">Agencia Creativa X | Ene 2021 - Presente</span>
+                                    <p style="font-size:0.9rem; margin-top:8px; color:#444; line-height: 1.5;">Lideré el equipo de diseño para campañas digitales y rebranding de marcas nacionales. Aumenté la retención de usuarios en un 30% gracias al rediseño de flujos principales.</p>
+                                </div>
+                                <div style="margin-bottom: 25px;">
+                                    <strong style="color:var(--color-primary); font-size: 1.1rem;">UX/UI Junior</strong><br>
+                                    <span style="font-size:0.85rem; color:#777; font-weight:600;">Startup Tech | Mar 2019 - Dic 2020</span>
+                                    <p style="font-size:0.9rem; margin-top:8px; color:#444; line-height: 1.5;">Desarrollo de wireframes, prototipos interactivos y pruebas de usuario para aplicaciones móviles.</p>
+                                </div>
+                                
+                                <h3 style="border-bottom: 2px solid var(--color-secondary); padding-bottom: 5px; margin-bottom: 15px; color:var(--color-primary); text-transform: uppercase; font-size: 1.1rem; margin-top:30px;">Educación</h3>
+                                <div style="margin-bottom: 15px;">
+                                    <strong style="color:var(--color-primary); font-size: 1.1rem;">Profesional en Diseño Gráfico</strong><br>
+                                    <span style="font-size:0.85rem; color:#777; font-weight:600;">Universidad Nacional | 2015 - 2019</span>
+                                    <p style="font-size:0.9rem; margin-top:8px; color:#444; line-height: 1.5;">Especialización en interacción y medios digitales.</p>
+                                </div>
+                            </div>
+                            
+                            <div style="width: 40%;">
+                                <h3 style="border-bottom: 2px solid var(--color-secondary); padding-bottom: 5px; margin-bottom: 15px; color:var(--color-primary); text-transform: uppercase; font-size: 1.1rem;">Habilidades</h3>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <span style="font-weight: 600; font-size: 0.9rem; display:block; margin-bottom: 5px; color:#333;">Figma</span>
+                                    <div style="width:100%; height:8px; background:#e0e0e0; border-radius:4px;"><div style="width:90%; height:100%; background:var(--color-secondary); border-radius:4px;"></div></div>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <span style="font-weight: 600; font-size: 0.9rem; display:block; margin-bottom: 5px; color:#333;">Adobe Illustrator</span>
+                                    <div style="width:100%; height:8px; background:#e0e0e0; border-radius:4px;"><div style="width:75%; height:100%; background:var(--color-secondary); border-radius:4px;"></div></div>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <span style="font-weight: 600; font-size: 0.9rem; display:block; margin-bottom: 5px; color:#333;">Photoshop</span>
+                                    <div style="width:100%; height:8px; background:#e0e0e0; border-radius:4px;"><div style="width:85%; height:100%; background:var(--color-secondary); border-radius:4px;"></div></div>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <span style="font-weight: 600; font-size: 0.9rem; display:block; margin-bottom: 5px; color:#333;">HTML & CSS</span>
+                                    <div style="width:100%; height:8px; background:#e0e0e0; border-radius:4px;"><div style="width:60%; height:100%; background:var(--color-secondary); border-radius:4px;"></div></div>
+                                </div>
+                                
+                                <h3 style="border-bottom: 2px solid var(--color-secondary); padding-bottom: 5px; margin-bottom: 15px; color:var(--color-primary); text-transform: uppercase; font-size: 1.1rem; margin-top:40px;">Contacto</h3>
+                                <p style="font-size:0.9rem; color:#444; line-height: 1.8; margin-top:10px;">
+                                    <i class="fas fa-phone" style="width:20px; color:var(--color-secondary)"></i> +57 300 123 4567<br>
+                                    <i class="fas fa-envelope" style="width:20px; color:var(--color-secondary)"></i> hola@juanpablo.com<br>
+                                    <i class="fas fa-map-marker-alt" style="width:20px; color:var(--color-secondary)"></i> Bogotá, Colombia<br>
+                                    <i class="fab fa-linkedin" style="width:20px; color:var(--color-secondary)"></i> linkedin.com/in/jpablo
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 20px; background: #fff; text-align: center; border-top: 1px solid #eee;">
+                <button onclick="alert('Descargando Hoja de Vida en PDF...')" style="background: var(--color-secondary); color: var(--color-primary); font-weight: 700; padding: 12px 24px; border-radius: 12px; border: none; cursor: pointer; font-size: 1rem; transition: 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"><i class="fas fa-download"></i> Descargar PDF</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+            const modal = document.getElementById('workPreviewModal');
+
+            // Lógica del menú hamburguesa
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navMenu.classList.toggle('is-open');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                    navMenu.classList.remove('is-open');
+                }
+            });
+
+            // Cerrar modal al hacer clic fuera del contenido
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    hideWorkDetails();
+                }
+            });
+
+
+            // --- FUNCIONES DE INTERACCIÓN DE PERFIL ---
+
+            window.editName = function () {
+                const currentName = document.getElementById('profileName').innerText.split(' ')[0];
+                const newName = prompt("Edita tu nombre de perfil:", currentName);
+                if (newName && newName.trim() !== "") {
+                    document.getElementById('profileName').innerHTML = newName + ' <i class="fas fa-pen" style="font-size: 0.8rem; opacity: 0.7;"></i>';
+                    document.querySelector('.mobile-profile-name').textContent = newName;
+                }
+            }
+
+            window.triggerUpload = function (inputId) {
+                document.getElementById(inputId).click();
+            }
+
+            window.updateImage = function (input, imgId) {
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById(imgId).src = e.target.result;
+                        if (imgId === 'mainAvatar') {
+                            document.getElementById('mobileAvatar').src = e.target.result;
+                        }
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            window.uploadNewWork = function () {
+                alert("Redirigiendo a la zona de subida de proyectos...");
+            }
+
+            // --- FUNCIÓN DEL MODAL DE DETALLES DE TRABAJO ---
+
+            window.showWorkDetails = function (title, description) {
+                const modal = document.getElementById('workPreviewModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalDesc = document.getElementById('modalDescription');
+                const mainImg = document.getElementById('modalMainImage');
+                const gallery = document.getElementById('modalGallery');
+
+                // Extraer imagen de la tarjeta clickeada
+                const clickedCard = event.currentTarget;
+                const imageSrc = clickedCard.querySelector('img') ? clickedCard.querySelector('img').src : '';
+
+                // Rellenar datos
+                modalTitle.textContent = title;
+                modalDesc.textContent = description;
+
+                // Imagen principal
+                if (imageSrc) {
+                    mainImg.src = imageSrc;
+                    mainImg.style.display = 'block';
+                } else {
+                    mainImg.style.display = 'none';
+                }
+
+                // Galería de ejemplo (miniaturas procedurales)
+                gallery.innerHTML = '';
+                const seeds = [20, 21, 22, 23];
+                seeds.forEach((s, i) => {
+                    const thumb = document.createElement('img');
+                    thumb.src = `https://picsum.photos/200/150?random=${s}`;
+                    thumb.className = 'gallery-thumb' + (i === 0 ? ' active' : '');
+                    thumb.alt = 'Miniatura ' + (i + 1);
+                    thumb.addEventListener('click', () => {
+                        mainImg.src = thumb.src;
+                        document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+                        thumb.classList.add('active');
+                    });
+                    gallery.appendChild(thumb);
+                });
+
+                // Resetear edición
+                ['modalDescription', 'modalClient', 'modalYear', 'modalTools'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.contentEditable = 'false';
+                });
+
+                // Video oculto al abrir
+                document.getElementById('modalVideoWrap').style.display = 'none';
+                document.getElementById('addVideoBtn').style.display = 'inline-flex';
+
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            };
+
+            window.hideWorkDetails = function () {
+                document.getElementById('workPreviewModal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            };
+
+            /* Activar/desactivar edición de un campo contenteditable */
+            window.toggleEdit = function (fieldId) {
+                const el = document.getElementById(fieldId);
+                if (!el) return;
+                const isEditing = el.contentEditable === 'true';
+                el.contentEditable = isEditing ? 'false' : 'true';
+                if (!isEditing) {
+                    el.focus();
+                    // Mover cursor al final
+                    const range = document.createRange();
+                    range.selectNodeContents(el);
+                    range.collapse(false);
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            };
+
+            /* Añadir imágenes a la galería */
+            window.addGalleryImages = function (input) {
+                const gallery = document.getElementById('modalGallery');
+                const mainImg = document.getElementById('modalMainImage');
+                Array.from(input.files).forEach(file => {
+                    const url = URL.createObjectURL(file);
+                    const thumb = document.createElement('img');
+                    thumb.src = url;
+                    thumb.className = 'gallery-thumb';
+                    thumb.alt = file.name;
+                    thumb.addEventListener('click', () => {
+                        mainImg.src = url;
+                        document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+                        thumb.classList.add('active');
+                    });
+                    gallery.appendChild(thumb);
+                });
+            };
+
+            /* Añadir video */
+            window.addVideo = function (input) {
+                if (!input.files[0]) return;
+                const url = URL.createObjectURL(input.files[0]);
+                const video = document.getElementById('modalVideo');
+                const wrap = document.getElementById('modalVideoWrap');
+                const btn = document.getElementById('addVideoBtn');
+                video.src = url;
+                wrap.style.display = 'block';
+                btn.style.display = 'none';
+            };
+
+            // --- MOSTRAR/OCULTAR PREVISUALIZACIÓN DE HOJA DE VIDA ---
+            window.showResumePreview = function() {
+                const modal = document.getElementById('resumePreviewModal');
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            };
+
+            window.hideResumePreview = function() {
+                const modal = document.getElementById('resumePreviewModal');
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            };
+            
+            // Cerrar modal de hoja de vida al hacer clic fuera del contenido
+            const resumeModal = document.getElementById('resumePreviewModal');
+            resumeModal.addEventListener('click', (e) => {
+                if (e.target === resumeModal) {
+                    hideResumePreview();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
